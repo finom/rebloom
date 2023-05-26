@@ -1,10 +1,10 @@
 /* eslint-disable max-classes-per-file */
 import { renderHook, act } from '@testing-library/react-hooks';
-import Use0 from '../src';
+import Act0 from '../src';
 
 describe('useValue', () => {
   it('Extends class', () => {
-    class Store extends Use0 {
+    class Store extends Act0 {
       public x = 1;
     }
 
@@ -28,8 +28,8 @@ describe('useValue', () => {
   });
 
   it('Extends class', () => {
-    class Store extends Use0 {
-      public data = Use0.data({ y: 1 });
+    class Store extends Act0 {
+      public data = Act0.act({ y: 1 });
     }
 
     const store = new Store();

@@ -1,6 +1,9 @@
 import { useValue } from 'use-change';
 
-class Use0 {
+// eslint-disable-next-line @typescript-eslint/no-use-before-define
+export const act = <DATA extends object>(data: DATA): Act0 & DATA => new Act0(data) as Act0 & DATA;
+
+export default class Act0 {
   constructor(data?: object) {
     if (data) {
       Object.assign(this, data);
@@ -9,7 +12,5 @@ class Use0 {
 
   readonly use = <KEY extends keyof this>(key: KEY) => useValue<typeof this, KEY>(this, key);
 
-  static readonly data = <DATA extends object>(data: DATA): Use0 & DATA => new Use0(data) as Use0 & DATA;
+  static readonly act = act;
 }
-
-export default Use0;
