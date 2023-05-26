@@ -1,7 +1,7 @@
 import { useValue } from 'use-change';
 
 // eslint-disable-next-line @typescript-eslint/no-use-before-define
-export const of = <DATA extends object>(data: DATA): Act0 & DATA => new Act0(data) as Act0 & DATA;
+export const of = <DATA extends object>(data?: DATA) => new Act0(data) as Act0 & DATA;
 
 export default class Act0 {
   constructor(data?: object) {

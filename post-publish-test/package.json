@@ -2,7 +2,7 @@
   "name": "use-change-post-publish",
   "dependencies": {
     "react": "*",
-    "use-change": "*"
+    "act0": "*"
   },
   "devDependencies": {
     "expect.js": "^0.3.1",

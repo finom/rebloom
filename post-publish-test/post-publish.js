@@ -14,15 +14,14 @@ execSync('rm -rf ../node_modules', { cwd: __dirname });
 const expect = require('expect.js');
 
 const {
-  default: useChange, useValue, useGet, useSet, useSilent,
-  listenChange, unlistenChange, Context, Provider,
-} = require('use-change');
+  default: Act0, of,
+} = require('act0');
 
-for (const f of [useChange, useValue, useGet, useSet, useSilent, listenChange, unlistenChange]) {
+for (const f of [of, Act0]) {
   expect(typeof f === 'function').to.be(true);
 }
 
-expect(Context.Provider).to.be(Provider);
+expect(Act0.of).to.be(of);
 
 // return main dependencies back
 execSync('npm i --legacy-peer-deps --prefix ..', { cwd: __dirname });

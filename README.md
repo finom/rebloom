@@ -1,40 +1,58 @@
-(WIP)
+# act0 - not a "redux"
 
-# Hook-less React application state powered by accessors
+> Type-safe React application state library with zero setup. Powered by `Object.defineProperty`.
 
-> This is an alternative README for [use-change](https://github.com/finom/use-change) that utilises the explicit overload. use-change includes a bunch of usefil hooks that allow to access application store safely. When I say "safely" I mean that you're never going to use application state object at your components directly. Instead I recommended to use Provider to make all components to have acces to one object and modify data with the `useState`-like hook. At this doc we're not going to use Provider at all, therefore we don't need the most of the hooks anymore. 
+## Quick start
 
-## TL;DR
-
-The approach allows you do do this:
+```sh
+npm i act0
+# yarn add act0
+```
 
 ```ts
-import store from './store'
+import Act0 from 'act0';
 
+// 1. Define your root store
+// Act0 adds "use" method to the RootStore instance, that's all what it does
+class RootStore extends Act0 {
+  count: 1,
+}
+
+const store = new RootStore();
+
+// 2. Use
 export default () => {
   const count = store.use('count'); // same as store['count'] but reactive
-  // const ids = store.users.use('ids'); // for nested sub-store, same as store.users['ids'] but reactive
 
   return (
     <div onClick={() => store.count++}>Clicks: {count}</div>
-  )
+  );
 }
 ```
 
---------
+## Slow start
 
-Before we start let's define a simple application state. It has `count` and `increment` at the root and `users` as sub-storage for data that specified for users (for now it's just an array of `ids`). 
+Create your store with ES6 classes extended by `Act0`. It's recommended to split it into multiple objects that I call "sub-stores". In the example below `Users` and `Companies` are sub-stores. Level of nesting is unlimited as for any other JavaScript object.
 
 ```ts
 // store.ts
-class Users {
-  public ids = [1, 2, 3];
+import Act0 from 'act0';
+
+class Users extends Act0 {
+  ids = [1, 2, 3];
+  readonly loadUsers = () => fetch('/users')
 }
 
-class RootStore {
-  public readonly users = new Users();
-  public count = 0;
-  public readonly increment = () => this.count++;
+class Companies extends Act0 {
+  name = 'My Company';
+}
+
+class RootStore extends Act0 {
+  readonly users = new Users();
+  readonly companies = new Companies();
+  readonly increment = () => this.count++;
+  readonly decrement = () => this.count--;
+  count = 0;
 }
 
 const store = new RootStore();
@@ -42,118 +60,153 @@ const store = new RootStore();
 export default store;
 ```
 
-**use-change** introduces a hook called `useValue` that allows to listen to data using property accessor. To access the app state data in your component you'd call `useValue` with 2 arguments: the object, and its key that's going to be listened.
+Use `readonly` prefix to protect class members to be reassigned.
+
+Use `use` method to access `store` object properties in your component.
 
 ```ts
-import { useValue } from 'use-change';
-import store from './store'
-
-export default () => {
-  const count = useValue(store, 'count');
-  const userIds = usealue(store.users, 'ids');
-
+const MyComponent = () => {
+  const count = store.use('count');
+  const ids = store.users.use('ids');
+  const name = store.companies.use('ids');
   // ...
-}
 ```
 
-The syntax is fine, but there is one cool idea: why not to define the hook as `use` method and never import hooks form **use-change** to your components?
+To change value, assign a new value.
 
-Let's define `use` method for all our sub-stores:
-
-```ts
-// store.ts
-class Users {
-  public ids = [1, 2, 3];
-  public readonly use = <KEY extends keyof this>(key: KEY) => useValue<typeof this, KEY>(this, key);
-}
-
-class RootStore {
-  public readonly users = new Users();
-  public count = 0;
-  public readonly increment = () => this.count++;
-  public readonly use = <KEY extends keyof this>(key: KEY) => useValue<typeof this, KEY>(this, key);
-}
-
-const store = new RootStore();
-
-export default store;
-```
-    
-> Tip: If you don't want to repeat `use` method at every class, you can create another class that is going to extend other classes.
-
-```ts
-// Use.ts
-import { useValue } from "use-change";
-
-export default class Use {
-    public readonly use = <KEY extends keyof this>(key: KEY) => useValue<typeof this, KEY>(this, key);
-}
-
-```
-```ts
-// store.ts
-import Use from './Use';
-
-class Users extends Use {
-  public ids = [1, 2, 3];
-}
-```
-
-From now, when we want to have reactive access to the property at React component we use this method and we also don't import hooks to our component anymore.
-    
-```ts
-import store from './store'
-
-export default () => {
-  const count = store.use('count'); // same as store['count'] but reactive
-  const userIds = store.users.use('ids'); // same as store.users['ids'] but reactive
-
-  // ...
-}
-```
-    
-    
-What if we want to set the value? Just use regular assignment and all components are going to trigger re-render.
-    
 ```ts
 store.count++;
 store.users.ids = [...store.users.ids, 4]
 ```
-    
-What if we want to call some custom code (i.e. action)? Just call the method. **use-change** doesn't introduce anything for side-effects, and we're going to use plain old JavaScript.
-    
+
+Call methods for actions.
+
 ```ts
-store.increment();
+useEffect(() => {
+  store.users.loadUsers().then(() => {
+    store.decrement();
+    // ...
+  });
+}, []); // no dependencies for methods
 ```
-    
-Full example:
-    
+
+Pass values returned from `use` as dependencies for hooks.
+
 ```ts
-import store from './store'
+const count = store.use('count');
 
-export default () => {
-  const count = store.use('count'); // same as store['count'] but reactive
-  const userIds = store.users.use('ids'); // same as store.users['ids'] but reactive
+const callback = useCallback(() => { console.log(count); }, [count])
+```
 
-  return (
-    <div onClick={() => {
-        store.count++;
-        // or store.increment()
-    }}>Clicks: {count}</div>
-  )
+You can split sub-stores into multiple files and access root store using first argument.
+
+```ts
+// ./store/index.ts
+import Users from './Users';
+import Companies from './Companies';
+
+export class RootStore {
+  readonly users: Users;
+  constructor() {
+    this.users = new Users(this);
+  }
 }
 ```
 
-That's what I call **hook-less**. Of course we still use hooks to implement that but:
-    
-- We don't import library-specific hooks to our components.
-- We've got a "natural" way to get values in your components: `foo.bar.baz.field` is replaced by `foo.bar.baz.use('field')`
-- All other operations are regular assignments or method calls.
-    
- > Tip: if you still want to `useState`-like syntax with value and setter function you can replace `useValue` by `useChange` at your `use` method and use the folloiwing syntax:
- 
- ```ts
-const [count, setCount] = store.use('count');
+```ts
+// ./store/Users.ts (Companies.ts is similar)
+import type { RootStore } from '.'; // "import type" avoids circular errors
+
+export default class Users {
+  #store: RootStore;
+  constructor(store: RootStore) {
+    this.#store = store;
+  }
+  readonly loadUsers() {
+    // you have access to any part of the store
+    const something = this.#store.companies.doSomething();
+    // ...
+  }
+}
 ```
 
-If you have any questions, open an issue or a discussion.
+I recommend to destructure all methods that are going to be called to make it obvious and to write less code at hooks and components.
+
+```ts
+const MyComponent = ({ id }) => {
+  const { increment, decrement, users: { loadUsers } } = store;
+  // ...
+```
+
+or better
+
+```ts
+const { increment, decrement, users: { loadUsers } } = store;
+
+const MyComponent = ({ id }) => {
+  // ...
+```
+
+
+
+## Act0.of
+
+If you don't want to define class you can use this static method. `Act0.of<T>(data?: T): Act0 & T` returns `Act0` instance with `use` method as type union of `Act0` and first optional argument. 
+
+```ts
+class RootStore extends Act0 {
+  readonly coordinates = Act0.of({ x: 0, y: 100 });
+  // ...
+
+const MyComponent = () => {
+  const x = store.coordinates.use('x');
+  const y = store.coordinates.use('y');
+  // ..
+  // store.coordinates.x = 100;
+```
+
+You can also define custom record:
+
+```ts
+class RootStore extends Act0 {
+  data: Act0.of<Record<string, any>>();
+  // ...
+}
+
+// ...
+```
+
+And acces values as usual:
+
+```ts
+const MyComponent = ({ id }) => {
+  const item = store.data.use(id); // returns store.data[id]
+  // ...
+  // store.data[id] = someValue; // triggers the component to re-render
+```
+
+For a very small app you can define your entire application state using `Act0.of` method (also exported as a constant).
+
+```ts
+// store.ts
+import { of as act } from 'act0';
+
+const store = act({
+  count: 1,
+  companies: act({
+    name: 'My company',
+    orEvenSomeMethod() { /* ... */ }
+  }),
+});
+
+export default store;
+```
+
+```ts
+import store from './store';
+
+const MyComponent = () => {
+  const count = store.use('count'); // same as store['count'] but reactive
+  const name = store.companies.use('name'); // same as store.companies['name'] but reactive
+
+```
