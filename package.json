@@ -1,6 +1,6 @@
 {
   "name": "use42",
-  "version": "0.0.6",
+  "version": "0.0.7",
   "description": "Application state",
   "main": "dist/index.js",
   "scripts": {
