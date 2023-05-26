@@ -1,4 +1,4 @@
-# act0 - not a "redux"
+# 🖤 act0 - not a "redux"
 
 > Type-safe React application state library with zero setup. Powered by `Object.defineProperty`.
 
@@ -107,15 +107,17 @@ import Companies from './Companies';
 
 export class RootStore {
   readonly users: Users;
+  readonly companies: Companies;
   constructor() {
     this.users = new Users(this);
+    this.companies = new Companies(this);
   }
 }
 ```
 
 ```ts
 // ./store/Users.ts (Companies.ts is similar)
-import type { RootStore } from '.'; // "import type" avoids circular errors
+import type { RootStore } from '.'; // "import type" avoids circular errors with ESLint
 
 export default class Users {
   #store: RootStore;
@@ -136,6 +138,7 @@ I recommend to destructure all methods that are going to be called to make it ob
 const MyComponent = ({ id }) => {
   const { increment, decrement, users: { loadUsers } } = store;
   // ...
+}
 ```
 
 or better
@@ -145,13 +148,13 @@ const { increment, decrement, users: { loadUsers } } = store;
 
 const MyComponent = ({ id }) => {
   // ...
+}
 ```
-
 
 
 ## Act0.of
 
-If you don't want to define class you can use this static method. `Act0.of<T>(data?: T): Act0 & T` returns `Act0` instance with `use` method as type union of `Act0` and first optional argument. 
+If you don't want to define class you can use this static method. `Act0.of<T>(data?: T): Act0 & T` returns `Act0` instance with `use` method and uses firtst argument as initial values. 
 
 ```ts
 class RootStore extends Act0 {
@@ -169,7 +172,7 @@ You can also define custom record:
 
 ```ts
 class RootStore extends Act0 {
-  data: Act0.of<Record<string, any>>();
+  data: Act0.of<Record<string, Item>>();
   // ...
 }
 
@@ -180,7 +183,7 @@ And acces values as usual:
 
 ```ts
 const MyComponent = ({ id }) => {
-  const item = store.data.use(id); // returns store.data[id]
+  const item = store.data.use(id); // same as store.data[id] but reactive 
   // ...
   // store.data[id] = someValue; // triggers the component to re-render
 ```
@@ -195,7 +198,7 @@ const store = act({
   count: 1,
   companies: act({
     name: 'My company',
-    orEvenSomeMethod() { /* ... */ }
+    someMethod() { /* ... */ }
   }),
 });
 
@@ -209,4 +212,5 @@ const MyComponent = () => {
   const count = store.use('count'); // same as store['count'] but reactive
   const name = store.companies.use('name'); // same as store.companies['name'] but reactive
 
+  // store.companies.someMethod();
 ```
