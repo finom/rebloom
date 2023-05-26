@@ -29,7 +29,7 @@ describe('useValue', () => {
 
   it('Extends class', () => {
     class Store extends Act0 {
-      public data = Act0.act({ y: 1 });
+      public data = Act0.of({ y: 1 });
     }
 
     const store = new Store();
