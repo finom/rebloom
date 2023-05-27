@@ -13,9 +13,9 @@ npm i use-0
 import Use0 from 'use-0';
 
 // 1. Define your root store
-// Use0 adds "use" method to the RootStore instance, that's all what it does
+// Use0 adds a "use" method to the RootStore instance; that's all it does.
 class RootStore extends Use0 {
-  count: 1,
+  count: 1;
 }
 
 const store = new RootStore();
@@ -63,7 +63,7 @@ const store = new RootStore();
 export default store;
 ```
 
-Use `readonly` prefix to protect class members to be reassigned.
+Use the `readonly` prefix to prevent class members from being reassigned.
 
 Call `use` method to access `store` object properties in your component.
 
@@ -102,7 +102,7 @@ useEffect(() => {
 }, []); // methods don't need to be dependencies
 ```
 
-You can split sub-stores into multiple files and access root store using first argument.
+You can split sub-stores into multiple files and access the root store using the first argument.
 
 ```ts
 // ./store/index.ts
@@ -145,7 +145,7 @@ if (typeof window !== 'undefined' && process.env.NODE_ENV === 'development') {
 }
 ```
 
-I recommend to destructure all methods that are going to be called to make it obvious and to write less code at hooks and components.
+It's recommended to destructure all methods that are going to be called to make it obvious and to write less code at hooks and components.
 
 ```ts
 const MyComponent = ({ id }) => {
@@ -166,7 +166,7 @@ const MyComponent = ({ id }) => {
 
 ## Use0.of
 
-If you don't want to define class you can use this static method. `Use0.of<T>(data?: T): Use0 & T` returns `Use0` instance with `use` method and uses first argument as initial values. 
+If you don't want to define a class, you can use this static method. `Use0.of<T>(data?: T): Use0 & T` returns an instance of `Use0` with the `use` method, and uses the first argument as initial values.
 
 ```ts
 class RootStore extends Use0 {
@@ -195,7 +195,7 @@ class RootStore extends Use0 {
 // ...
 ```
 
-And acces values as expected using a variable:
+And access values as expected using a variable:
 
 ```ts
 const MyComponent = ({ id }: { id: string }) => {
