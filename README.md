@@ -40,7 +40,7 @@ import Use0 from 'use-0';
 
 class Users extends Use0 {
   ids = [1, 2, 3];
-  readonly loadUsers = () => fetch('/users')
+  readonly loadUsers = async () => await fetch('/users');
 }
 
 class Companies extends Use0 {
@@ -111,6 +111,7 @@ export class RootStore extends Use0 {
   readonly users: Users;
   readonly companies: Companies;
   constructor() {
+    super();
     this.users = new Users(this);
     this.companies = new Companies(this);
   }
@@ -162,7 +163,7 @@ const MyComponent = ({ id }) => {
 
 ## Use0.of
 
-If you don't want to define class you can use this static method. `Use0.of<T>(data?: T): Use0 & T` returns `Use0` instance with `use` method and uses firtst argument as initial values. 
+If you don't want to define class you can use this static method. `Use0.of<T>(data?: T): Use0 & T` returns `Use0` instance with `use` method and uses first argument as initial values. 
 
 ```ts
 class RootStore extends Use0 {
@@ -179,6 +180,10 @@ const MyComponent = () => {
 You can also define custom record:
 
 ```ts
+interface Item {
+  hello: string;
+}
+
 class RootStore extends Use0 {
   data: Use0.of<Record<string, Item>>();
   // ...
@@ -203,7 +208,7 @@ For a very small app you can define your entire application state using `Use0.of
 import { of } from 'use-0';
 
 const store = of({
-  count: 1,
+  count: 1;
   companies: of({
     name: 'My company',
     someMethod() { /* ... */ }
