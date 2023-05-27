@@ -182,6 +182,8 @@ const MyComponent = () => {
   // store.coordinates.x = 100;
 ```
 
+<img width="439" alt="image" src="https://github.com/finom/use-0/assets/1082083/0f105911-62db-457c-a732-cbd5d55782e7">
+
 You can also define custom record:
 
 ```ts
