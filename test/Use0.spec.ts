@@ -34,7 +34,12 @@ describe('useValue', () => {
     expect(of).toEqual(Use0.of);
 
     class Store extends Use0 {
-      public data = Use0.of({ y: 1, z: 'string' });
+      public data = Use0.of({ 
+        x: '0',
+        y: 1,
+      });
+
+      readonly coordinates = Use0.of({ x: 0, y: 100 });
     }
 
     const store = new Store();
