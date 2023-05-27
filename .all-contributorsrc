@@ -4,21 +4,9 @@
   ],
   "imageSize": 100,
   "commit": false,
-  "contributors": [
-    {
-      "login": "ivteplo",
-      "name": "Ivan Teplov",
-      "avatar_url": "https://avatars.githubusercontent.com/u/37793399?v=4",
-      "profile": "https://github.com/ivteplo",
-      "contributions": [
-        "doc",
-        "test",
-        "code"
-      ]
-    }
-  ],
+  "contributors": [],
   "contributorsPerLine": 7,
-  "projectName": "use-change",
+  "projectName": "use-0",
   "projectOwner": "finom",
   "repoType": "github",
   "repoHost": "https://github.com",

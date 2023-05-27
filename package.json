@@ -1,7 +1,7 @@
 {
   "name": "use-0",
   "version": "0.0.15",
-  "description": "Application state",
+  "description": "Type-safe React application state library with zero setup. Powered by Object.defineProperty.",
   "main": "dist/index.js",
   "scripts": {
     "test": "npm run unit && npm run lint && tsc --noemit",

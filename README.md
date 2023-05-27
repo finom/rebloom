@@ -1,4 +1,4 @@
-# 🖤 use-0 - not a "redux"
+# 🖤 use-0 - not redux
 
 > Type-safe React application state library with zero setup. Powered by `Object.defineProperty`.
 
@@ -62,13 +62,13 @@ export default store;
 
 Use `readonly` prefix to protect class members to be reassigned.
 
-Use `use` method to access `store` object properties in your component.
+Call `use` method to access `store` object properties in your component.
 
 ```ts
 const MyComponent = () => {
   const count = store.use('count');
   const ids = store.users.use('ids');
-  const name = store.companies.use('ids');
+  const name = store.companies.use('name');
   // ...
 ```
 
@@ -76,7 +76,16 @@ To change value, assign a new value.
 
 ```ts
 store.count++;
-store.users.ids = [...store.users.ids, 4]
+store.users.ids = [...store.users.ids, 4];
+store.companies.name = 'Hello';
+```
+
+Pass values returned from `use` as dependencies for hooks.
+
+```ts
+const ids = store.users.use('ids');
+
+useEffect(() => { console.log(ids); }, [ids])
 ```
 
 Call methods for actions.
@@ -87,25 +96,18 @@ useEffect(() => {
     store.decrement();
     // ...
   });
-}, []); // no dependencies for methods
-```
-
-Pass values returned from `use` as dependencies for hooks.
-
-```ts
-const count = store.use('count');
-
-const callback = useCallback(() => { console.log(count); }, [count])
+}, []); // methods don't need to be dependencies
 ```
 
 You can split sub-stores into multiple files and access root store using first argument.
 
 ```ts
 // ./store/index.ts
+import Use0 from 'use-0';
 import Users from './Users';
 import Companies from './Companies';
 
-export class RootStore {
+export class RootStore extends Use0 {
   readonly users: Users;
   readonly companies: Companies;
   constructor() {
@@ -117,18 +119,25 @@ export class RootStore {
 
 ```ts
 // ./store/Users.ts (Companies.ts is similar)
+import Use0 from 'use-0';
 import type { RootStore } from '.'; // "import type" avoids circular errors with ESLint
 
-export default class Users {
-  #store: RootStore;
-  constructor(store: RootStore) {
-    this.#store = store;
-  }
+export default class Users extends Use0 {
+  constructor(private readonly store: RootStore) {}
   readonly loadUsers() {
     // you have access to any part of the store
-    const something = this.#store.companies.doSomething();
+    const something = this.store.companies.doSomething();
     // ...
   }
+}
+```
+
+To access the store using dev tools use this snippet:
+
+```ts
+// store.ts
+if (typeof window !== 'undefined' && process.env.NODE_ENV === 'development') {
+  (window as unknown as { store: RootStore }).store = store;
 }
 ```
 
@@ -150,7 +159,6 @@ const MyComponent = ({ id }) => {
   // ...
 }
 ```
-
 
 ## Use0.of
 
@@ -179,10 +187,10 @@ class RootStore extends Use0 {
 // ...
 ```
 
-And acces values as usual:
+And acces values as expected using a variable:
 
 ```ts
-const MyComponent = ({ id }) => {
+const MyComponent = ({ id }: { id: string }) => {
   const item = store.data.use(id); // same as store.data[id] but reactive 
   // ...
   // store.data[id] = someValue; // triggers the component to re-render
@@ -213,4 +221,7 @@ const MyComponent = () => {
   const name = store.companies.use('name'); // same as store.companies['name'] but reactive
 
   // store.companies.someMethod();
+  // store.companies.name = 'Hello'; // triggers the component to re-render
+  // ...
+}
 ```

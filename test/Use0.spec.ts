@@ -6,6 +6,8 @@ describe('useValue', () => {
   it('Extends class', () => {
     class Store extends Use0 {
       public x = 1;
+
+      users = Use0.of<{ ids: ReadonlyArray<number> }>({ ids: [1] as const });
     }
 
     const store = new Store();
@@ -13,6 +15,7 @@ describe('useValue', () => {
     let renderedTimes = 0;
     const { result } = renderHook(() => {
       renderedTimes += 1;
+
       return store.use('x');
     });
 
@@ -31,7 +34,7 @@ describe('useValue', () => {
     expect(of).toEqual(Use0.of);
 
     class Store extends Use0 {
-      public data = Use0.of({ y: 1 });
+      public data = Use0.of({ y: 1, z: 'string' });
     }
 
     const store = new Store();
