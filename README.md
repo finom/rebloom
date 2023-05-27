@@ -154,7 +154,7 @@ export default class Users extends Use0 {
 }
 ```
 
-To access the store using dev tools use this universal snippet:
+To access `store` variable using dev tools use this universal snippet:
 
 ```ts
 // ./store/index.ts
