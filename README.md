@@ -1,5 +1,6 @@
 <p align="center">
 <img src="assets/logo.svg">
+<br>
 <a href="https://badge.fury.io/js/use-0">
     <img src="https://badge.fury.io/js/use-0.svg" alt="npm version" />
 </a>
