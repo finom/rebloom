@@ -1,7 +1,7 @@
 {
   "name": "use-0",
   "version": "0.0.17",
-  "description": "Type-safe React application state library with zero setup. Powered by Object.defineProperty.",
+  "description": "Type-safe React application state library with zero setup",
   "main": "dist/index.js",
   "scripts": {
     "test": "npm run unit && npm run lint && tsc --noemit",
@@ -24,7 +24,11 @@
     "hook",
     "react",
     "redux",
-    "mobx"
+    "mobx",
+    "use",
+    "state",
+    "store",
+    "useState"
   ],
   "author": "Andrii Gubanov",
   "license": "MIT",
