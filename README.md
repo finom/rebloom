@@ -1,10 +1,19 @@
-# 🖤 use-0 - not redux
-
-[![npm version](https://badge.fury.io/js/use-0.svg)](https://badge.fury.io/js/use-0) [![TypeScript](https://img.shields.io/badge/%3C%2F%3E-TypeScript-%230074c1.svg)](http://www.typescriptlang.org/) [![Build status](https://github.com/finom/use-0/actions/workflows/main.yml/badge.svg)](https://github.com/finom/use-0/actions)
+<p align="center">
+<img src="assets/logo.svg">
+<a href="https://badge.fury.io/js/use-0">
+    <img src="https://badge.fury.io/js/use-0.svg" alt="npm version" />
+</a>
+<a href="http://www.typescriptlang.org/">
+    <img src="https://img.shields.io/badge/%3C%2F%3E-TypeScript-%230074c1.svg" alt="TypeScript" />
+</a>
+<a href="https://github.com/finom/use-0/actions">
+    <img src="https://github.com/finom/use-0/actions/workflows/main.yml/badge.svg" alt="Build status" />
+</a>
+</p>
 
 > Type-safe React application state library with zero setup. Powered by `Object.defineProperty`.
 
-<img src="assets/logo.svg">
+
 
 ## Quick start
 
