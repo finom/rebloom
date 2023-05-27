@@ -24,13 +24,15 @@ const store = new RootStore();
 
 // 2. Use
 export default () => {
-  const count = store.use('count'); // same as store['count'] but reactive
+  const count = store.use('count'); // same as store['count'] but works as a hook
 
   return (
     <div onClick={() => store.count++}>Clicks: {count}</div>
   );
 }
 ```
+
+TypeScript output:
 
 <img width="560" alt="image" src="https://github.com/finom/use-0/assets/1082083/2edf53c6-3f0b-418e-a366-ff2d7158513f">
 
@@ -70,6 +72,8 @@ Use the `readonly` prefix to prevent class members from being reassigned.
 Call `use` method to access `store` object properties in your component.
 
 ```ts
+import store from './store';
+
 const MyComponent = () => {
   const count = store.use('count');
   const ids = store.users.use('ids');
@@ -182,6 +186,8 @@ const MyComponent = () => {
   // store.coordinates.x = 100;
 ```
 
+TypeScript output:      
+
 <img width="439" alt="image" src="https://github.com/finom/use-0/assets/1082083/0f105911-62db-457c-a732-cbd5d55782e7">
 
 You can also define custom record:
@@ -203,7 +209,7 @@ And access values as expected using a variable:
 
 ```ts
 const MyComponent = ({ id }: { id: string }) => {
-  const item = store.data.use(id); // same as store.data[id] but reactive 
+  const item = store.data.use(id); // same as store.data[id] but works as a hook
   // ...
   // store.data[id] = someValue; // triggers the component to re-render
 ```
@@ -229,8 +235,8 @@ export default store;
 import store from './store';
 
 const MyComponent = () => {
-  const count = store.use('count'); // same as store['count'] but reactive
-  const name = store.companies.use('name'); // same as store.companies['name'] but reactive
+  const count = store.use('count'); // same as store['count'] but works as a hook
+  const name = store.companies.use('name'); // same as store.companies['name'] but works as a hook
 
   // store.companies.someMethod();
   // store.companies.name = 'Hello'; // triggers the component to re-render

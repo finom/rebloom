@@ -7,7 +7,7 @@ describe('useValue', () => {
     class Store extends Use0 {
       public x = 1;
 
-      users = Use0.of<{ ids: ReadonlyArray<number> }>({ ids: [1] as const });
+      users = Use0.of<{ ids: ReadonlyArray<number> }>({ ids: [1] });
     }
 
     const store = new Store();
@@ -34,9 +34,9 @@ describe('useValue', () => {
     expect(of).toEqual(Use0.of);
 
     class Store extends Use0 {
-      public data = Use0.of({ x: '0', y: 1 });
+      public data = Use0.of<Record<string, number>>();
 
-      readonly coordinates = Use0.of({ x: 0, y: 100 });
+      readonly coordinates = Use0.of({ x: 0, y: 1 });
     }
 
     const store = new Store();
@@ -44,17 +44,17 @@ describe('useValue', () => {
     let renderedTimes = 0;
     const { result } = renderHook(() => {
       renderedTimes += 1;
-      return store.data.use('y');
+      return store.coordinates.use('y');
     });
 
     expect(result.current).toBe(1);
-    expect(store.data.y).toBe(1);
+    expect(store.coordinates.y).toBe(1);
     expect(renderedTimes).toBe(1);
 
-    act(() => { store.data.y = 2; });
+    act(() => { store.coordinates.y = 2; });
 
     expect(result.current).toBe(2);
-    expect(store.data.y).toBe(2);
+    expect(store.coordinates.y).toBe(2);
     expect(renderedTimes).toBe(2);
   });
 });

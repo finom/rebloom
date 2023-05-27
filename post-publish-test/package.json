@@ -1,5 +1,6 @@
 {
   "name": "use-0-post-publish",
+  "private": true,
   "dependencies": {
     "react": "*",
     "use-0": "*"
