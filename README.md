@@ -1,20 +1,20 @@
-# 🖤 act0 - not a "redux"
+# 🖤 use-0 - not a "redux"
 
 > Type-safe React application state library with zero setup. Powered by `Object.defineProperty`.
 
 ## Quick start
 
 ```sh
-npm i act0
-# yarn add act0
+npm i use-0
+# yarn add use-0
 ```
 
 ```ts
-import Act0 from 'act0';
+import Use0 from 'use-0';
 
 // 1. Define your root store
-// Act0 adds "use" method to the RootStore instance, that's all what it does
-class RootStore extends Act0 {
+// Use0 adds "use" method to the RootStore instance, that's all what it does
+class RootStore extends Use0 {
   count: 1,
 }
 
@@ -32,22 +32,22 @@ export default () => {
 
 ## Slow start
 
-Create your store with ES6 classes extended by `Act0`. It's recommended to split it into multiple objects that I call "sub-stores". In the example below `Users` and `Companies` are sub-stores. Level of nesting is unlimited as for any other JavaScript object.
+Create your store with ES6 classes extended by `Use0`. It's recommended to split it into multiple objects that I call "sub-stores". In the example below `Users` and `Companies` are sub-stores. Level of nesting is unlimited as for any other JavaScript object.
 
 ```ts
 // store.ts
-import Act0 from 'act0';
+import Use0 from 'use-0';
 
-class Users extends Act0 {
+class Users extends Use0 {
   ids = [1, 2, 3];
   readonly loadUsers = () => fetch('/users')
 }
 
-class Companies extends Act0 {
+class Companies extends Use0 {
   name = 'My Company';
 }
 
-class RootStore extends Act0 {
+class RootStore extends Use0 {
   readonly users = new Users();
   readonly companies = new Companies();
   readonly increment = () => this.count++;
@@ -152,13 +152,13 @@ const MyComponent = ({ id }) => {
 ```
 
 
-## Act0.of
+## Use0.of
 
-If you don't want to define class you can use this static method. `Act0.of<T>(data?: T): Act0 & T` returns `Act0` instance with `use` method and uses firtst argument as initial values. 
+If you don't want to define class you can use this static method. `Use0.of<T>(data?: T): Use0 & T` returns `Use0` instance with `use` method and uses firtst argument as initial values. 
 
 ```ts
-class RootStore extends Act0 {
-  readonly coordinates = Act0.of({ x: 0, y: 100 });
+class RootStore extends Use0 {
+  readonly coordinates = Use0.of({ x: 0, y: 100 });
   // ...
 
 const MyComponent = () => {
@@ -171,8 +171,8 @@ const MyComponent = () => {
 You can also define custom record:
 
 ```ts
-class RootStore extends Act0 {
-  data: Act0.of<Record<string, Item>>();
+class RootStore extends Use0 {
+  data: Use0.of<Record<string, Item>>();
   // ...
 }
 
@@ -188,15 +188,15 @@ const MyComponent = ({ id }) => {
   // store.data[id] = someValue; // triggers the component to re-render
 ```
 
-For a very small app you can define your entire application state using `Act0.of` method (also exported as a constant).
+For a very small app you can define your entire application state using `Use0.of` method (also exported as a constant).
 
 ```ts
 // store.ts
-import { of as act } from 'act0';
+import { of } from 'use-0';
 
-const store = act({
+const store = of({
   count: 1,
-  companies: act({
+  companies: of({
     name: 'My company',
     someMethod() { /* ... */ }
   }),

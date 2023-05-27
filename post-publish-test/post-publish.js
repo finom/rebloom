@@ -14,14 +14,14 @@ execSync('rm -rf ../node_modules', { cwd: __dirname });
 const expect = require('expect.js');
 
 const {
-  default: Act0, of,
-} = require('act0');
+  default: Use0, of,
+} = require('use-0');
 
-for (const f of [of, Act0]) {
+for (const f of [of, Use0]) {
   expect(typeof f === 'function').to.be(true);
 }
 
-expect(Act0.of).to.be(of);
+expect(Use0.of).to.be(of);
 
 // return main dependencies back
 execSync('npm i --legacy-peer-deps --prefix ..', { cwd: __dirname });
