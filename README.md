@@ -133,7 +133,7 @@ import Use0 from 'use-0';
 import type { RootStore } from '.'; // "import type" avoids circular errors with ESLint
 
 export default class Users extends Use0 {
-  constructor(private readonly store: RootStore) {}
+  constructor(private readonly store: RootStore) {} // fancy syntax to define private member
   readonly loadUsers() {
     // you have access to any part of the store
     const something = this.store.companies.doSomething();
@@ -145,7 +145,7 @@ export default class Users extends Use0 {
 To access the store using dev tools use this snippet:
 
 ```ts
-// store.ts
+// ./store/index.ts
 if (typeof window !== 'undefined' && process.env.NODE_ENV === 'development') {
   (window as unknown as { store: RootStore }).store = store;
 }
@@ -172,7 +172,7 @@ const MyComponent = ({ id }) => {
 
 ## Use0.of
 
-If you don't want to define a class, you can use this static method. `Use0.of<T>(data?: T): Use0 & T` returns an instance of `Use0` with the `use` method, and uses the first argument as initial values.
+If you don't want to define a class, you can use this static method. `Use0.of<T>(data?: T): Use0 & T` returns an instance of `Use0` with the `use` method, and uses the first optional argument as initial data.
 
 ```ts
 class RootStore extends Use0 {
@@ -205,7 +205,7 @@ class RootStore extends Use0 {
 // ...
 ```
 
-And access values as expected using a variable:
+And access values as expected using regular variable:
 
 ```ts
 const MyComponent = ({ id }: { id: string }) => {
