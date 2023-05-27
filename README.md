@@ -112,7 +112,7 @@ useEffect(() => { console.log(ids); }, [ids])
 Call methods for actions.
 
 ```ts
-useEffect(() => {
+const callback = useCallback(() => {
   store.users.loadUsers().then(() => {
     store.decrement();
     // ...
@@ -154,7 +154,7 @@ export default class Users extends Use0 {
 }
 ```
 
-To access the store using dev tools use this snippet:
+To access the store using dev tools use this universal snippet:
 
 ```ts
 // ./store/index.ts
@@ -197,10 +197,6 @@ const MyComponent = () => {
   // ..
   // store.coordinates.x = 100;
 ```
-
-TypeScript output:      
-
-<img width="439" alt="image" src="https://github.com/finom/use-0/assets/1082083/0f105911-62db-457c-a732-cbd5d55782e7">
 
 You can also define custom record:
 

@@ -30,7 +30,7 @@ describe('useValue', () => {
     expect(renderedTimes).toBe(2);
   });
 
-  it('Extends class', () => {
+  it('Uses "of"', () => {
     expect(of).toEqual(Use0.of);
 
     class Store extends Use0 {
