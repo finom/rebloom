@@ -1,6 +1,6 @@
 {
   "name": "use-0",
-  "version": "0.0.17",
+  "version": "0.1.0",
   "description": "Type-safe React application state library with zero setup",
   "main": "dist/index.js",
   "scripts": {
