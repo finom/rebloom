@@ -301,15 +301,10 @@ type RemoveThis<F extends (this: any, ...args: any[]) => any> = F extends (this:
 ```
 
 ```ts
-// ./store/users/index.ts
-import * as m from './methods';
-
 export class Users extends Use0 {
   readonly loadUsers: RemoveThis<typeof m.loadUsers>;
   constructor() {
     super();
-    // you can write a function that does that automatically
-    // bindModuleFunctions(this, m);
     this.loadUsers = m.loadUsers.bind();
   }
 }
