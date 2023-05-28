@@ -288,6 +288,8 @@ export class Users extends Use0 {
   ids = [1, 2, 3];
   constructor() {
     super();
+    // you can write a function that automates that if the method definition is is set to "loadUsers = m.loadUsers" instead of "loadUsers: typeof m.loadUsers" to trick TypeScript
+    // Example: this.rebind(m) or super(m)
     this.loadUsers = m.loadUsers.bind(this); // makes "this: Users" context available at the function
   }
 }
