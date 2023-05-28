@@ -347,7 +347,7 @@ const { loadUsers } = store.users; // no error
 
 ----------
 
-Simpler way to define methods and data separately is to define 2 separate classes.
+Simpler way to define methods and data separately is to define two classes.
 
 ```ts
 class UserMethods extends Use0 {
