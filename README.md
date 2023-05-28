@@ -194,7 +194,7 @@ import Use0 from 'use-0';
 import type { RootStore } from '.';
 
 class Users extends Use0 {
-  store!: RootStore;
+  store!: RootStore; // ! allows to define "store" property later
   readonly loadUsers = () => {
     // you have access to any part of the store
     const something = this.store.companies.doSomething();
@@ -219,7 +219,7 @@ export class RootStore extends Use0 {
   readonly companies = companies;
   constructor() {
     // you can write a function that automates that:
-    // assignStore(this, [users, companies]);
+    // this.assignStore(users, companies);
     users.store = this;
     companies.store = this;
   }
