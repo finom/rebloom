@@ -120,6 +120,15 @@ const callback = useCallback(() => {
 }, []); // methods don't need to be dependencies
 ```
 
+To access `store` variable at `window.store` using dev tools use this universal snippet:
+
+```ts
+// ./store/index.ts
+if (typeof window !== 'undefined' && process.env.NODE_ENV === 'development') {
+  (window as unknown as { store: RootStore }).store = store;
+}
+```
+
 ----------
 
 You can split sub-stores into multiple files and access the root store using the first argument.
@@ -172,15 +181,6 @@ const { increment, decrement, users: { loadUsers } } = store;
 
 const MyComponent = ({ id }) => {
   // ...
-}
-```
-
-> Tip: To access `store` variable using dev tools use this universal snippet:
-
-```ts
-// ./store/index.ts
-if (typeof window !== 'undefined' && process.env.NODE_ENV === 'development') {
-  (window as unknown as { store: RootStore }).store = store;
 }
 ```
 
