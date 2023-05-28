@@ -346,6 +346,25 @@ Type `RemoveThis` allows to fix a TypeScript error that appears when you assign 
 const { loadUsers } = store.users; // no error
 ```
 
+----------
+
+Another way to define methods and data separately is to define 2 separate classes.
+
+```ts
+class UserMethods extends Use0 {
+  readonly loadUsers = async () => {
+    console.log(this.ids);
+  }
+}
+
+class User extends UserMethods {
+  ids = [1, 2, 3];
+}
+
+// ...
+// store.users.loadUsers();
+```
+
 ## Use0.of
 
 If you don't want to define a class, you can use this static method. `Use0.of<T>(data?: T): Use0 & T` returns an instance of `Use0` with the `use` method, and uses the first optional argument as initial data.
