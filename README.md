@@ -12,7 +12,7 @@
 </a>
 </p>
 
-> Tired of reduxes? Meet type-safe React application state library with zero setup and zero additional knowledge required. Only TypeScript and no reducers or observers anymore.
+> Tired of reduxes? Meet type-safe React state library for scalable apps with zero setup and zero additional knowledge required. Only TypeScript and no reducers or observers anymore.
 
 ## Quick start
 
@@ -246,7 +246,7 @@ export const { loadUsers, createUser } = users;
 export default users;
 ```
 
-Then you can import the sub-store and the method at your component.
+Then you can import the sub-store and the methods to your component.
 
 ```ts
 import users, { loadUsers, createUser } from './store/users';
@@ -256,7 +256,7 @@ const MyComponent = () => {
   const ids = users.use('ids');
 
   useEffect(() => {
-    loadUsers().then(() => {
+    createUser().then(() => {
       // ...
       users.ids = [...ids, id];
     })
@@ -264,9 +264,38 @@ const MyComponent = () => {
 }
 ```
 
+At this case if you don't need direct access to the root store you can delete its export.
+
+```ts
+class RootStore {
+  // ...
+}
+
+new RootStore(); // don't export, just initialise
+```
+
+After that initialise the store in your app you need to import it somewhere.
+
+```ts
+import './store';
+```
+
+After that you're not able to import `RootStore` anymore to keep the code safe.
+
+```ts
+// does not work anymore
+import store from './store'; 
+// import sub-stores and methods instead
+import users, { loadUsers, createUser } from './store/users';
+
+const MyComponent = () => {
+  // ...
+}
+```
+
 ----------
 
-To separate your methods from classes you can define them in a different file.
+To separate your actions from data you can define them in a different file.
 
 ```ts
 // ./store/users/methods.ts
