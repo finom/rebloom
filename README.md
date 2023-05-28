@@ -295,7 +295,7 @@ const MyComponent = () => {
 
 ----------
 
-To separate your actions from data you can define them in a different file.
+To separate your actions (methods) from data you can define them in a different file.
 
 ```ts
 // ./store/users/methods.ts
