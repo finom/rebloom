@@ -12,7 +12,7 @@
 </a>
 </p>
 
-> Tired of reduxes? Type-safe React application state library with zero setup. Powered by `Object.defineProperty`.
+> Tired of reduxes? Meet type-safe React application state library with zero setup and zero additional knowledge required. Only TypeScript and no reducers or observers anymore.
 
 ## Quick start
 
