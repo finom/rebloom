@@ -120,7 +120,7 @@ const callback = useCallback(() => {
 }, []); // methods don't need to be dependencies
 ```
 
-To access `store` variable at `window.store` using dev tools use this universal snippet:
+To access `store` variable available at `window.store` using dev tools use this universal snippet:
 
 ```ts
 // ./store/index.ts
