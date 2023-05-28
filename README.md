@@ -295,7 +295,7 @@ const MyComponent = () => {
 
 ### (Optional) Separate your data and methods
 
-To separate your actions (methods) from data you can define them in a different file.
+To separate your actions (methods) from data you can define them in a different file. This way allows to refactor further by moving methods to individual files and re-exporting them in one file.
 
 ```ts
 // ./store/users/methods.ts
@@ -308,7 +308,7 @@ export async function loadUsers(this: Users, something: string) {
 }
 ```
 
-Then make them available at the class.
+Then make the methods available at the class.
 
 ```ts
 // ./store/users/index.ts
@@ -348,7 +348,7 @@ const { loadUsers } = store.users; // no error
 
 ----------
 
-Another way to define methods and data separately is to define 2 separate classes.
+Simpler way to define methods and data separately is to define 2 separate classes.
 
 ```ts
 class UserMethods extends Use0 {
