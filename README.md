@@ -269,6 +269,7 @@ To separate your methods from classes you can define them in a separate file.
 
 ```ts
 // ./store/users/methods.ts
+// this file can be split into smaller files
 import type { Users } from ".";
 
 export async function loadUsers(this: Users, something: string) {
@@ -276,8 +277,6 @@ export async function loadUsers(this: Users, something: string) {
   console.log(this.ids);
 }
 ```
-
-`methods.ts` itself can be split into smaller files.
 
 Then make them available at the class.
 
