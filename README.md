@@ -118,7 +118,7 @@ const callback = useCallback(() => {
 }, []); // methods don't need to be dependencies
 ```
 
-To access `store` variable available at `window.store` using dev tools use this universal snippet:
+To access `store` variable available at `window.store` use this universal snippet:
 
 ```ts
 if (typeof window !== 'undefined' && process.env.NODE_ENV === 'development') {
