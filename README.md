@@ -146,20 +146,11 @@ import type { RootStore } from '.'; // "import type" avoids circular errors with
 
 export default class Users extends Use0 {
   constructor(private readonly store: RootStore) {} // fancy syntax to define private member
-  readonly loadUsers() {
+  readonly loadUsers = () => {
     // you have access to any part of the store
     const something = this.store.companies.doSomething();
     // ...
   }
-}
-```
-
-To access `store` variable using dev tools use this universal snippet:
-
-```ts
-// ./store/index.ts
-if (typeof window !== 'undefined' && process.env.NODE_ENV === 'development') {
-  (window as unknown as { store: RootStore }).store = store;
 }
 ```
 
@@ -179,6 +170,91 @@ const { increment, decrement, users: { loadUsers } } = store;
 
 const MyComponent = ({ id }) => {
   // ...
+}
+```
+
+Another way to build your store is to export instances of sub-stores instead of classes.
+
+```ts
+// ./store/users.ts
+import Use0 from 'use-0';
+import type { RootStore } from '.'; // "import type" avoids circular errors with ESLint
+
+class Users extends Use0 {
+  public store!: RootStore;
+  readonly loadUsers = () => {
+    // you have access to any part of the store
+    const something = this.store.companies.doSomething();
+    // ...
+  }
+}
+
+const users = new Users();
+
+export default users;
+```
+
+Then assign `store` value to sub-stores manually.
+
+```ts
+import users from './users';
+import companies from './companies';
+
+export class RootStore {
+  readonly users = users;
+  readonly companies = companies;
+  constructor() {
+    // you can write a function that automates that:
+    // assignStore(users, companies);
+    users.store = this;
+    companies.store = this;
+  }
+}
+```
+
+This way to architect the store makes possible to export sub-stores or their methods separate from the root store.
+
+```ts
+// ./store/users.ts
+class Users extends Use0 {
+  store!: RootStore;
+  ids = [1, 2, 3];
+  readonly loadUsers = async () => {
+    // this.store.doSomething();
+  }
+}
+
+const users = new Users();
+
+export const loadUsers = users.loadUsers;
+
+export default users;
+```
+
+Then you can import the sub-store and the method at your component.
+
+```ts
+import users, { loadUsers } from './store/users';
+// import companies, { loadCompanies, doSomething } from './store/companies';
+
+const MyComponent = () => {
+  const ids = users.use('ids');
+
+  useEffect(() => {
+    loadUsers().then(() => {
+      // ...
+      users.ids = [...ids, id];
+    })
+  }, [ids]);
+}
+```
+
+To access `store` variable using dev tools use this universal snippet:
+
+```ts
+// ./store/index.ts
+if (typeof window !== 'undefined' && process.env.NODE_ENV === 'development') {
+  (window as unknown as { store: RootStore }).store = store;
 }
 ```
 
@@ -232,7 +308,7 @@ const store = of({
   count: 1;
   companies: of({
     name: 'My company',
-    someMethod() { /* ... */ }
+    someMethod:() { /* ... */ }
   }),
 });
 
