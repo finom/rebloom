@@ -127,7 +127,7 @@ if (typeof window !== 'undefined' && process.env.NODE_ENV === 'development') {
 }
 ```
 
-----------
+### Split store into files
 
 You can split sub-stores into multiple files and access the root store using the first argument.
 
@@ -293,7 +293,7 @@ const MyComponent = () => {
 }
 ```
 
-----------
+### (Optional) Separate your data and methods
 
 To separate your actions (methods) from data you can define them in a different file.
 
