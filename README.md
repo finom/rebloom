@@ -263,7 +263,7 @@ const MyComponent = () => {
 }
 ```
 
-At this case if you don't need direct access to the root store you can delete its export to keep code safer.
+At this case if you don't need direct access to the root store you can delete export of the variable to keep code safer.
 
 ```ts
 export class RootStore {
@@ -346,7 +346,7 @@ const { loadUsers } = store.users; // no error
 
 ----------
 
-Simpler way to define methods and data separately is to define two classes and extend one by another.
+Simpler way to define methods and data separately is to implement two classes and extend one by another.
 
 ```ts
 class UserMethods extends Use0 {
