@@ -219,7 +219,7 @@ export class RootStore extends Use0 {
   readonly companies = companies;
   constructor() {
     // you can write a function that automates that:
-    // this.assignStore(users, companies);
+    // this.assignStore(users, companies, ...rest);
     users.store = this;
     companies.store = this;
   }
