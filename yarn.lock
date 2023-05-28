@@ -1326,7 +1326,7 @@ isexe@^2.0.0:
 
 jasmine-core@~3.99.0:
   version "3.99.1"
-  resolved "https://registry.yarnpkg.com/jasmine-core/-/jasmine-core-3.99.1.tgz#5bfa4b2d76618868bfac4c8ff08bb26fffa4120d"
+  resolved "https://registry.npmjs.org/jasmine-core/-/jasmine-core-3.99.1.tgz"
   integrity sha512-Hu1dmuoGcZ7AfyynN3LsfruwMbxMALMka+YtZeGoLuDEySVmVAPaonkNoBRIw/ectu8b9tVQCJNgp4a4knp+tg==
 
 jasmine-spec-reporter@^7.0.0:
@@ -1345,7 +1345,7 @@ jasmine-ts@^0.4.0:
 
 jasmine@^3.10.0:
   version "3.99.0"
-  resolved "https://registry.yarnpkg.com/jasmine/-/jasmine-3.99.0.tgz#7cc7aeda7ade2d57694fc818a374f778cbb4ea62"
+  resolved "https://registry.npmjs.org/jasmine/-/jasmine-3.99.0.tgz"
   integrity sha512-YIThBuHzaIIcjxeuLmPD40SjxkEcc8i//sGMDKCgkRMVgIwRJf5qyExtlJpQeh7pkeoBSOe6lQEdg+/9uKg9mw==
   dependencies:
     glob "^7.1.6"
@@ -1979,10 +1979,10 @@ uri-js@^4.2.2:
   dependencies:
     punycode "^2.1.0"
 
-use-change@^1.1.3:
-  version "1.1.3"
-  resolved "https://registry.yarnpkg.com/use-change/-/use-change-1.1.3.tgz#d90ed20a15f27a61a67f8b5853e894264287248a"
-  integrity sha512-gtE872E6A+5Jrr17aKhKXnf/8KZpQYNMhJEgsu0fAkJ/m6ony3+i7NxEs23NQG3iY2U43RYug8qwG8tb+E879w==
+use-change@^1.1.4:
+  version "1.1.4"
+  resolved "https://registry.yarnpkg.com/use-change/-/use-change-1.1.4.tgz#ce5ce5ea723d1f24447b638f48296d9531de3a77"
+  integrity sha512-XMlWmf+UBjqneWVG8ktWxTbN29LtZbNl0DnKbhG5vMzEARMhnpVUKEjps283zMBOhuxTXQz76eaJbwoBKN452w==
 
 v8-compile-cache-lib@^3.0.1:
   version "3.0.1"
