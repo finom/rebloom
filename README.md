@@ -121,7 +121,6 @@ const callback = useCallback(() => {
 To access `store` variable available at `window.store` using dev tools use this universal snippet:
 
 ```ts
-// ./store/index.ts
 if (typeof window !== 'undefined' && process.env.NODE_ENV === 'development') {
   (window as unknown as { store: RootStore }).store = store;
 }
