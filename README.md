@@ -234,11 +234,14 @@ class Users extends Use0 {
   readonly loadUsers = async () => {
     // this.store.doSomething();
   }
+  readonly createUser = async () => {
+    // ...
+  }
 }
 
 const users = new Users();
 
-export const loadUsers = users.loadUsers;
+export const { loadUsers, createUser } = users;
 
 export default users;
 ```
@@ -246,7 +249,7 @@ export default users;
 Then you can import the sub-store and the method at your component.
 
 ```ts
-import users, { loadUsers } from './store/users';
+import users, { loadUsers, createUser } from './store/users';
 // import companies, { loadCompanies, doSomething } from './store/companies';
 
 const MyComponent = () => {
