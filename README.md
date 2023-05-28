@@ -263,7 +263,7 @@ const MyComponent = () => {
 
 ----------
 
-To separate your methods from classes you can define them in a separate file.
+To separate your methods from classes you can define them in a different file.
 
 ```ts
 // ./store/users/methods.ts
@@ -301,19 +301,15 @@ type RemoveThis<F extends (this: any, ...args: any[]) => any> = F extends (this:
 ```ts
 export class Users extends Use0 {
   readonly loadUsers: RemoveThis<typeof m.loadUsers>;
-  constructor() {
-    super();
-    this.loadUsers = m.loadUsers.bind(this);
-  }
+  // ...
 }
 ```
 
-Type `RemoveThis` allows to fix an error that appears when you assign a method to a variable.
+Type `RemoveThis` allows to fix an error that appears when you assign the method to a variable.
 
 ```ts
 const { loadUsers } = store.users; // no error
 ```
-
 
 ## Use0.of
 
