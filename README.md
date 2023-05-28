@@ -299,7 +299,6 @@ To separate your actions (methods) from data you can define them in a different 
 
 ```ts
 // ./store/users/methods.ts
-// this file can be also split into smaller files
 import type { Users } from ".";
 
 export async function loadUsers(this: Users, something: string) {
