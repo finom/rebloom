@@ -157,7 +157,7 @@ export default class Users extends Use0 {
   constructor(private readonly store: RootStore) {} // fancy syntax to define private member
   readonly loadUsers = () => {
     // you have access to any part of the store
-    const something = this.store.companies.doSomething();
+    this.store.companies.doSomething();
     // ...
   }
 }
@@ -195,7 +195,7 @@ class Users extends Use0 {
   store!: RootStore; // ! allows to define "store" property later
   readonly loadUsers = () => {
     // you have access to any part of the store
-    const something = this.store.companies.doSomething();
+    this.store.companies.doSomething();
     // ...
   }
 }
@@ -224,7 +224,7 @@ export class RootStore extends Use0 {
 }
 ```
 
-This way to architect the store makes possible to export sub-stores or their methods separate from the root store.
+This way to architect the store makes possible to export sub-stores and their methods separate from the root store.
 
 ```ts
 // ./store/users.ts
