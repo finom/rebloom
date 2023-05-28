@@ -264,23 +264,23 @@ const MyComponent = () => {
 }
 ```
 
-At this case if you don't need direct access to the root store you can delete its export.
+At this case if you don't need direct access to the root store you can delete its export to keep code safer.
 
 ```ts
-class RootStore {
+export class RootStore {
   // ...
 }
 
 new RootStore(); // don't export, just initialise
 ```
 
-After that initialise the store in your app you need to import it somewhere.
+After that import the module to initialise the store.
 
 ```ts
 import './store';
 ```
 
-After that you're not able to import `RootStore` anymore to keep the code safe.
+Now it's impossible to import the root store from other modules.
 
 ```ts
 // does not work anymore
