@@ -120,6 +120,8 @@ const callback = useCallback(() => {
 }, []); // methods don't need to be dependencies
 ```
 
+==================
+
 You can split sub-stores into multiple files and access the root store using the first argument.
 
 ```ts
@@ -172,6 +174,17 @@ const MyComponent = ({ id }) => {
   // ...
 }
 ```
+
+> Tip: To access `store` variable using dev tools use this universal snippet:
+
+```ts
+// ./store/index.ts
+if (typeof window !== 'undefined' && process.env.NODE_ENV === 'development') {
+  (window as unknown as { store: RootStore }).store = store;
+}
+```
+
+==================
 
 Another way to build your store is to export instances of sub-stores instead of classes.
 
@@ -249,14 +262,65 @@ const MyComponent = () => {
 }
 ```
 
-To access `store` variable using dev tools use this universal snippet:
+==================
+
+To separate your methods from classes you can define them in a separate file.
 
 ```ts
-// ./store/index.ts
-if (typeof window !== 'undefined' && process.env.NODE_ENV === 'development') {
-  (window as unknown as { store: RootStore }).store = store;
+// ./store/users/methods.ts
+import type { Users } from ".";
+
+export async function loadUsers(this: Users, something: string) {
+  // this.store.increment();
+  console.log(this.ids);
 }
 ```
+
+`methods.ts` itself can be split into smaller files.
+
+Then make them available at the class.
+
+```ts
+// ./store/users/index.ts
+import * as m from './methods';
+
+export class Users extends Use0 {
+  readonly loadUsers: typeof m.loadUsers;
+  ids = [1, 2, 3];
+  constructor() {
+    super();
+    this.loadUsers = m.loadUsers.bind(); // makes "this: Users" available at the function
+  }
+}
+```
+
+You may want to define your method with this fancy type that allows to unbind it.
+
+```ts
+type RemoveThis<F extends (this: any, ...args: any[]) => any> = F extends (this: infer T, ...args: infer A) => infer R ? (...args: A) => R : never;
+```
+
+```ts
+// ./store/users/index.ts
+import * as m from './methods';
+
+export class Users extends Use0 {
+  readonly loadUsers: RemoveThis<typeof m.loadUsers>;
+  constructor() {
+    super();
+    // you can write a function that does that automatically
+    // bindModuleFunctions(this, m);
+    this.loadUsers = m.loadUsers.bind();
+  }
+}
+```
+
+Type `RemoveThis` allows to fix an error that appears when you assign a method to a variable.
+
+```ts
+const { loadUsers } = store.users; // no error
+```
+
 
 ## Use0.of
 
