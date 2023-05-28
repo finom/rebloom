@@ -181,7 +181,7 @@ import Use0 from 'use-0';
 import type { RootStore } from '.'; // "import type" avoids circular errors with ESLint
 
 class Users extends Use0 {
-  public store!: RootStore;
+  store!: RootStore;
   readonly loadUsers = () => {
     // you have access to any part of the store
     const something = this.store.companies.doSomething();
