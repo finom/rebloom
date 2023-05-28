@@ -120,7 +120,7 @@ const callback = useCallback(() => {
 }, []); // methods don't need to be dependencies
 ```
 
-==================
+----------
 
 You can split sub-stores into multiple files and access the root store using the first argument.
 
@@ -184,7 +184,7 @@ if (typeof window !== 'undefined' && process.env.NODE_ENV === 'development') {
 }
 ```
 
-==================
+----------
 
 Another way to build your store is to export instances of sub-stores instead of classes.
 
@@ -262,7 +262,7 @@ const MyComponent = () => {
 }
 ```
 
-==================
+----------
 
 To separate your methods from classes you can define them in a separate file.
 
