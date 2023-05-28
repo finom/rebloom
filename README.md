@@ -292,7 +292,79 @@ const MyComponent = () => {
 }
 ```
 
-### (Optional) Separate your data and methods
+----------
+
+We import methods and sub-stores separately but you still can access methods of `users` instance. In other words you still have 2 ways to call the method from your components.
+
+```ts
+import users, { loadUsers, createUser } from './store/users';
+
+const MyComponent = () => {
+  const ids = users.use('ids');
+
+  loadUsers();
+
+  users.loadUsers();
+  // ...
+}
+```
+
+To avoid that and make code stricter we can export the sub-store with its methos hidden.
+
+```ts
+export class Users extends Use0 {
+  // ...
+}
+
+const users = new Users();
+
+export const { loadUsers, createUser } = users;
+
+export default users as OmitMethods<Users>; // <--
+```
+
+Now we're not able to use methods but we have our all other properties available.
+
+```ts
+import users, { loadUsers, createUser } from './store/users';
+
+
+const MyComponent = () => {
+  const ids = users.use('ids');
+
+  loadUsers();
+
+  users.loadUsers(); // error
+  // ...
+}
+```
+
+Since we're re-defined default export we need to update `RootStore` so `users` has valid type.
+
+```ts
+import Use0 from 'use-0';
+import users, { Users } from './users';
+
+export class RootStore extends Use0 {
+  readonly users = users as Users; // <--
+  readonly companies = companies;
+  constructor() {
+    users.store = this;
+  }
+}
+```
+
+Implementation of `OmitMethods`:
+
+```ts
+type FunctionPropertyNames<T> = {
+  [K in keyof T]: T[K] extends (...args: any[]) => any ? K : never;
+}[keyof T];
+  
+export type OmitMethods<T> = Omit<T, Exclude<FunctionPropertyNames<T>, 'use'> | 'store'>;
+```
+
+### (Optional) Separate your data from methods
 
 To separate your actions (methods) from data you can define them in a different file. This way allows to refactor further by moving methods to individual files and re-exporting them in one file.
 
