@@ -269,7 +269,7 @@ To separate your methods from classes you can define them in a separate file.
 
 ```ts
 // ./store/users/methods.ts
-// this file can be split into smaller files
+// this file can be also split into smaller files
 import type { Users } from ".";
 
 export async function loadUsers(this: Users, something: string) {
@@ -289,7 +289,7 @@ export class Users extends Use0 {
   ids = [1, 2, 3];
   constructor() {
     super();
-    this.loadUsers = m.loadUsers.bind(); // makes "this: Users" available at the function
+    this.loadUsers = m.loadUsers.bind(this); // makes "this: Users" context available at the function
   }
 }
 ```
@@ -305,7 +305,7 @@ export class Users extends Use0 {
   readonly loadUsers: RemoveThis<typeof m.loadUsers>;
   constructor() {
     super();
-    this.loadUsers = m.loadUsers.bind();
+    this.loadUsers = m.loadUsers.bind(this);
   }
 }
 ```
