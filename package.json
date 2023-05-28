@@ -61,6 +61,6 @@
     "react": "*"
   },
   "dependencies": {
-    "use-change": "^1.1.2"
+    "use-change": "^1.1.3"
   }
 }
