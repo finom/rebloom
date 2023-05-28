@@ -12,9 +12,7 @@
 </a>
 </p>
 
-> Type-safe React application state library with zero setup. Powered by `Object.defineProperty`.
-
-
+> Tired of reduxes? Type-safe React application state library with zero setup. Powered by `Object.defineProperty`.
 
 ## Quick start
 
@@ -294,7 +292,7 @@ export class Users extends Use0 {
 }
 ```
 
-You may want to define your method with this fancy type that allows to unbind it.
+You may want to define your method with this fancy type that allows to unbind it preserving the `this` context.
 
 ```ts
 type RemoveThis<F extends (this: any, ...args: any[]) => any> = F extends (this: infer T, ...args: infer A) => infer R ? (...args: A) => R : never;
@@ -364,7 +362,7 @@ For a very small app you can define your entire application state using `Use0.of
 import { of } from 'use-0';
 
 const store = of({
-  count: 1;
+  count = 1;
   companies: of({
     name: 'My company',
     someMethod:() { /* ... */ }
