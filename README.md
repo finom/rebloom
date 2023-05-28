@@ -166,7 +166,7 @@ export default class Users extends Use0 {
 It's recommended to destructure all methods that are going to be called to make it obvious and to write less code at hooks and components.
 
 ```ts
-const MyComponent = ({ id }) => {
+const MyComponent = () => {
   const { increment, decrement, users: { loadUsers } } = store;
   // ...
 }
@@ -177,7 +177,7 @@ or better
 ```ts
 const { increment, decrement, users: { loadUsers } } = store;
 
-const MyComponent = ({ id }) => {
+const MyComponent = () => {
   // ...
 }
 ```
@@ -283,6 +283,7 @@ Then make them available at the class.
 import * as m from './methods';
 
 export class Users extends Use0 {
+  store!: RootStore;
   readonly loadUsers: typeof m.loadUsers;
   ids = [1, 2, 3];
   constructor() {
@@ -305,7 +306,7 @@ export class Users extends Use0 {
 }
 ```
 
-Type `RemoveThis` allows to fix an error that appears when you assign the method to a variable.
+Type `RemoveThis` allows to fix a TypeScript error that appears when you assign the method to a variable.
 
 ```ts
 const { loadUsers } = store.users; // no error
