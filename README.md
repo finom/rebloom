@@ -191,7 +191,7 @@ Another way to build your store is to export instances of sub-stores instead of 
 ```ts
 // ./store/users.ts
 import Use0 from 'use-0';
-import type { RootStore } from '.'; // "import type" avoids circular errors with ESLint
+import type { RootStore } from '.';
 
 class Users extends Use0 {
   store!: RootStore;
@@ -210,15 +210,16 @@ export default users;
 Then assign `store` value to sub-stores manually.
 
 ```ts
+import Use0 from 'use-0';
 import users from './users';
 import companies from './companies';
 
-export class RootStore {
+export class RootStore extends Use0 {
   readonly users = users;
   readonly companies = companies;
   constructor() {
     // you can write a function that automates that:
-    // assignStore(users, companies);
+    // assignStore(this, [users, companies]);
     users.store = this;
     companies.store = this;
   }
