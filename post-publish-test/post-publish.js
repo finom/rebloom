@@ -6,8 +6,9 @@
 /* eslint-disable @typescript-eslint/no-unsafe-assignment */
 /* eslint-disable @typescript-eslint/no-unsafe-call */
 const { execSync } = require('child_process');
+const path = require('path');
 
-execSync('rm -rf node_modules && npm i --legacy-peer-deps --no-package-lock', { cwd: __dirname });
+execSync('rm -rf node_modules && yarn --no-lockfile', { cwd: __dirname });
 // remove root dependencies to avoid usage of them
 execSync('rm -rf ../node_modules', { cwd: __dirname });
 
@@ -24,4 +25,4 @@ for (const f of [of, Use0]) {
 expect(Use0.of).to.be(of);
 
 // return main dependencies back
-execSync('npm i --legacy-peer-deps --prefix ..', { cwd: __dirname });
+execSync('yarn', { cwd: path.join(__dirname, '..') });

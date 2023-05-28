@@ -93,7 +93,7 @@
     "@nodelib/fs.stat" "2.0.5"
     run-parallel "^1.1.9"
 
-"@nodelib/fs.stat@2.0.5", "@nodelib/fs.stat@^2.0.2":
+"@nodelib/fs.stat@^2.0.2", "@nodelib/fs.stat@2.0.5":
   version "2.0.5"
   resolved "https://registry.npmjs.org/@nodelib/fs.stat/-/fs.stat-2.0.5.tgz"
   integrity sha512-RkhPPp2zrqDAQA/2jNhnztcPAlv64XdhIp7a7454A5ovI7Bukxgt7MX7udwAu3zg1DcpPU0rz3VV1SeaqvY4+A==
@@ -1464,7 +1464,7 @@ minimist@^1.2.0, minimist@^1.2.6:
   resolved "https://registry.npmjs.org/minimist/-/minimist-1.2.8.tgz"
   integrity sha512-2yyAR8qBkN3YuheJanUpWC5U3bb5osDywNB8RzDVlDwDHbocAJveqqj1u8+SVD7jkWT4yvsHCpWqqWqAxb0zCA==
 
-ms@2.1.2, ms@^2.1.1:
+ms@^2.1.1, ms@2.1.2:
   version "2.1.2"
   resolved "https://registry.npmjs.org/ms/-/ms-2.1.2.tgz"
   integrity sha512-sGkPx+VjMtmA6MX27oA4FBFELFCZZ4S4XqeGOXCv68tT+jb3vk/RyaKWP0PTKyWtmLSM0b+adUTEvbs1PEaH2w==
@@ -1981,7 +1981,7 @@ uri-js@^4.2.2:
 
 use-change@^1.1.4:
   version "1.1.4"
-  resolved "https://registry.yarnpkg.com/use-change/-/use-change-1.1.4.tgz#ce5ce5ea723d1f24447b638f48296d9531de3a77"
+  resolved "https://registry.npmjs.org/use-change/-/use-change-1.1.4.tgz"
   integrity sha512-XMlWmf+UBjqneWVG8ktWxTbN29LtZbNl0DnKbhG5vMzEARMhnpVUKEjps283zMBOhuxTXQz76eaJbwoBKN452w==
 
 v8-compile-cache-lib@^3.0.1:
