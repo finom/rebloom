@@ -397,7 +397,7 @@ const MyComponent = () => {
 }
 ```
 
-Since we're re-defined default export we need to update `RootStore` so `users` has valid type.
+Since we're re-defined default export we need to update `RootStore` so `users` has valid type. Nested sub-stores should follow the same pattern.
 
 ```ts
 import Use0 from 'use-0';
@@ -476,9 +476,9 @@ class UserData extends Use0 {
 
 class User extends UserData {
   hiddenField = 1;
-  readonly profiles: Profiles; // not visible by other modules
+  readonly profiles: Profiles; // sub-store that is not visible by other modules
   readonly loadUsers = async () => {
-    console.log(this.ids);
+    this.profiles.doSomething(this.ids);
   }
 }
 
