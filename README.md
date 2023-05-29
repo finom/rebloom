@@ -404,6 +404,59 @@ export class RootStore extends Use0 {
 }
 ```
 
+Using either `OmitMethods` or class splitting you can also hide other sub-stores.
+
+```ts
+class UserData extends Use0 {
+   ids = [1, 2, 3];
+}
+
+class User extends UserData {
+  readonly profiles: Profiles;
+  readonly loadUsers = async () => {
+    console.log(this.ids);
+  }
+}
+
+const users = new Users();
+
+export default users as UserData;
+```
+
+`profiles` sub-store is not available anymore when `users` is imported.
+
+```ts
+import users from './store/users';
+
+users.profiles.doSomething(); // error since "profiles" doesn't exist at UserData class
+```
+
+Your complex component module imports are going to look similar to this:
+
+```ts
+import users, { loadUsers } from './store/users';
+import profile, { loadProfile, updateProfile } from './store/users/profiles';
+import companies, { deleteCompany } from './store/companies';
+import baz, { method1, method2, method3 } from './store/foo/bar/baz';
+
+const MyComponent = () => {
+  const ids = users.use('ids');
+
+  useEffect(() => {
+    loadUsers();
+  }, [ids]);
+}
+```
+
+And you cannot use nested store properties anymore since sub-stores are protected.
+
+```ts
+users.profiles.use('something'); // error
+
+// but
+profiles.use('something'); // no error
+```
+
 ### Conclusion
 
 1. Using patterns above we restrict the code and provide only one way to import the store by component modules: `import subStoreWithNoMethods, { method1, method2 } from './store/foo/bar/baz` where default export is used for "data" and named export is used for actions. It doesn't make sense to provide full store access to other modules that aren't related to the store.
