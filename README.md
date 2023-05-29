@@ -12,7 +12,7 @@
 </a>
 </p>
 
-> Type-safe React state library for scalable apps with zero setup and zero additional knowledge required. No reducers, sagas or observers anymore, only TypeScript!
+> Type-safe React state library for scalable apps with zero setup and zero additional knowledge required. Here you'll find tiny documentation with very detailed examples on how use the library, how to use it with standard hooks such as `useEffect`, how to to protect private data and actions from being used by components, how to avoid direct access to root store and also how to structure your files for a large-scale app.
 
 ## Quick start
 
