@@ -351,6 +351,7 @@ export class RootStore extends Use0 {
   readonly users = users as Users; // override back
   readonly companies = companies;
   constructor() {
+    super();
     users.store = this;
   }
 }
