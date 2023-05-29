@@ -321,6 +321,7 @@ const MyComponent = () => {
 
 At this case if you don't need direct access to the root store you can delete export of the variable to keep code safer. You can also remove `extends Use0` from the `RootStore` class since its instance is not able to be used by components or other modules anymore.
 
+
 ```ts
 export class RootStore {
   // ...
@@ -347,6 +348,8 @@ const MyComponent = () => {
   // ...
 }
 ```
+
+Now the only way to access the root store is to use it at sub-store methods.
 
 If you need some root-level settings you can define another sub-store caled `App` or `Settings`.
 
