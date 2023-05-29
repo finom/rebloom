@@ -42,11 +42,6 @@ export default () => {
 }
 ```
 
-TypeScript output:
-
-<img width="560" alt="image" src="https://github.com/finom/use-0/assets/1082083/2edf53c6-3f0b-418e-a366-ff2d7158513f">
-
-
 ## Slow start
 
 After you read this README you're going to have well-built, extensible and type-safe application state with unlimited structure. We're going to hide `store` variable to make it impossible to be used directly in your modules. Even though `store` is a nested object with all the methods and properties available, we're going to apply some TypeScript to reveal what components and other modules would need (for example you implement a method that's going to be used by store but it should not be available at components). 
