@@ -400,7 +400,7 @@ class UserData extends Use0 {
   ids = [1, 2, 3];
 }
 
-class User extends UserData {
+export class User extends UserData {
   readonly loadUsers = async () => {
     console.log(this.ids);
   }
