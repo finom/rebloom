@@ -12,7 +12,7 @@
 </a>
 </p>
 
-> Tired of reduxes? Meet type-safe React state library for scalable apps with zero setup and zero additional knowledge required. Only TypeScript and no reducers or observers anymore.
+> Tired of reduxes? Meet type-safe React state library for scalable apps with zero setup and zero additional knowledge required. No reducers, sagas or observers anymore, only TypeScript.
 
 ## Quick start
 
@@ -320,7 +320,7 @@ const users = new Users();
 
 export const { loadUsers, createUser } = users;
 
-export default users as OmitMethods<Users>; // <--
+export default users as OmitMethods<Users>; // override
 ```
 
 Now we're not able to use methods but we have our all other properties available.
@@ -346,7 +346,7 @@ import Use0 from 'use-0';
 import users, { Users } from './users';
 
 export class RootStore extends Use0 {
-  readonly users = users as Users; // <--
+  readonly users = users as Users; // override back
   readonly companies = companies;
   constructor() {
     users.store = this;
@@ -364,9 +364,52 @@ type FunctionPropertyNames<T> = {
 export type OmitMethods<T> = Omit<T, Exclude<FunctionPropertyNames<T>, 'use'> | 'store'>;
 ```
 
-### (Optional) Separate your data from methods
+The type preserves `use` method and hides `store` property.
 
-To separate your actions (methods) from data you can define them in a different file. This way allows to refactor further by moving methods to individual files and re-exporting them in one file.
+An alternative way to protect your methods from being used by other module is to apply similar pattern but define two classes: one for data, another for methods. Then use `users as UserData` to override the default type. At this case you don't need `OmitMethods` type anymore.
+
+```ts
+class UserData extends Use0 {
+   ids = [1, 2, 3];
+}
+
+class User extends UserMethods {
+  readonly loadUsers = async () => {
+    console.log(this.ids);
+  }
+}
+
+const users = new Users();
+
+export const { loadUsers } = users;
+
+export default users as UserData; // override
+```
+
+Use the same code for the root store to make `RootStore['users']` have all the methods available.
+
+```ts
+import Use0 from 'use-0';
+import users, { Users } from './users';
+
+export class RootStore extends Use0 {
+  readonly users = users as Users; // override back
+  readonly companies = companies;
+  constructor() {
+    users.store = this;
+  }
+}
+```
+
+### Conclusion
+
+1. Using patterns above we restrict the code and provide only one way to import the store by component modules: `import subStoreWithNoMethods, { method1, method2 } from './store/foo/bar/baz`. It doesn't make sense to provide full store access to other modules.
+2. Store class methods still have full access to the store and other-sub stores with their methods using `this.store`.
+3. You get infinite scaling using less code.
+
+### (Optional) Split your methods
+
+In case if a class is too big because of long methods you can move them to another file. This way allows to refactor further by moving methods to individual files and re-exporting them in one file.
 
 ```ts
 // ./store/users/methods.ts
@@ -378,7 +421,7 @@ export async function loadUsers(this: Users, something: string) {
 }
 ```
 
-Then make the methods available at the class.
+Then make the methods available at the class by binding instance context to the methods using `bind`.
 
 ```ts
 // ./store/users/index.ts
@@ -390,14 +433,14 @@ export class Users extends Use0 {
   ids = [1, 2, 3];
   constructor() {
     super();
-    // you can write a function that automates that if the method definition is is set to "loadUsers = m.loadUsers" instead of "loadUsers: typeof m.loadUsers" to trick TypeScript
-    // Example: this.rebind(m) or super(m)
+    // you can write a function that automates that
+    // this.rebind(m) or super(m)
     this.loadUsers = m.loadUsers.bind(this); // makes "this: Users" context available at the function
   }
 }
 ```
 
-You may want to define your method with this fancy type that allows to unbind it preserving the `this` context.
+You may want to define your method with this type that allows to unbind it preserving the `this` context.
 
 ```ts
 type RemoveThis<F extends (this: any, ...args: any[]) => any> = F extends (this: infer T, ...args: infer A) => infer R ? (...args: A) => R : never;
@@ -414,25 +457,6 @@ Type `RemoveThis` allows to fix a TypeScript error that appears when you assign 
 
 ```ts
 const { loadUsers } = store.users; // no error
-```
-
-----------
-
-Simpler way to define methods and data separately is to implement two classes and extend one by another.
-
-```ts
-class UserMethods extends Use0 {
-  readonly loadUsers = async () => {
-    console.log(this.ids);
-  }
-}
-
-class User extends UserMethods {
-  ids = [1, 2, 3];
-}
-
-// ...
-// store.users.loadUsers();
 ```
 
 ## Use0.of
