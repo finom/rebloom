@@ -49,6 +49,29 @@ TypeScript output:
 
 ## Slow start
 
+After you read this README you're going to have well-built, extensible and type-safe application state with unlimited structure. We're going to hide `store` variable to make it impossible to be used directly in your modules. Even though `store` is a nested object with all the methods and properties available, we're going to apply some TypeScript to reveal what components and other modules would need (for example you implement a method that's going to be used by store but it should not be available at components). Components aren't going to use nested parts of the store. Instead we're going to use one level of nesting (which means no `foo.bar.baz` to access a property in a store).
+
+```ts
+import users, { loadUsers } from './store/users';
+import profile, { loadProfile, updateProfile } from './store/users/profiles';
+import companies, { deleteCompany } from './store/companies';
+import baz, { method1, method2, method3 } from './store/foo/bar/baz';
+
+const MyComponent = () => {
+  const ids = users.use('ids');
+
+  // users.profile or foo.bar.baz are unabailable 
+
+  useEffect(() => {
+    loadUsers();
+  }, [ids]);
+
+  // ...
+}
+```
+
+----------
+
 Create your store with ES6 classes extended by `Use0`. It's recommended to split it into multiple objects that I call "sub-stores". In the example below `Users` and `Companies` are sub-stores. Level of nesting is unlimited as for any other JavaScript object.
 
 ```ts
@@ -372,7 +395,7 @@ An alternative way to protect your methods from being used by other module is to
 
 ```ts
 class UserData extends Use0 {
-   ids = [1, 2, 3];
+  ids = [1, 2, 3];
 }
 
 class User extends UserData {
@@ -393,12 +416,15 @@ Use the same code for the root store to make `RootStore['users']` have all the m
 ```ts
 import Use0 from 'use-0';
 import users, { Users } from './users';
+import companies, { Companies } from './companies';
 
 export class RootStore extends Use0 {
   readonly users = users as Users; // override back
-  readonly companies = companies;
+  readonly companies = companies as Companies; // override back
   constructor() {
+    super();
     users.store = this;
+    companies.store = this;
   }
 }
 ```
@@ -407,11 +433,11 @@ Using either `OmitMethods` or class splitting you can also hide other sub-stores
 
 ```ts
 class UserData extends Use0 {
-   ids = [1, 2, 3];
+  ids = [1, 2, 3];
 }
 
 class User extends UserData {
-  readonly profiles: Profiles;
+  readonly profiles: Profiles; // <--
   readonly loadUsers = async () => {
     console.log(this.ids);
   }
