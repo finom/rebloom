@@ -5,7 +5,7 @@ import Use0, { of } from '../src';
 describe('useValue', () => {
   it('Extends class', () => {
     class Store extends Use0 {
-      public x = 1;
+      x = 1;
 
       users = Use0.of<{ ids: ReadonlyArray<number> }>({ ids: [1] });
     }

@@ -348,6 +348,21 @@ const MyComponent = () => {
 }
 ```
 
+If you need some root-level settings you can define another sub-store caled `App` for example.
+
+```ts
+// ./store/app
+class App extends Use0 {
+  store!: RootStore;
+  theme = 'dark';
+}
+
+const app = new App();
+
+export default app;
+```
+
+
 ----------
 
 We import methods and sub-stores separately but you still can access methods of `users` instance. In other words you still have 2 ways to call the method from your components.
