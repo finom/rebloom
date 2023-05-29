@@ -471,7 +471,7 @@ class UserData extends Use0 {
 }
 
 class User extends UserData {
-  readonly profiles: Profiles; // <--
+  readonly profiles: Profiles; // not visible from the outside modules
   readonly loadUsers = async () => {
     console.log(this.ids);
   }
