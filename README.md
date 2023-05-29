@@ -44,9 +44,9 @@ export default () => {
 
 ## Slow start
 
-After you read this README you're going to have well-built, extensible and type-safe application state with unlimited structure. We're going to hide `store` variable to make it impossible to be used directly in your modules. Even though `store` is a nested object with all the methods and properties available, we're going to apply some TypeScript to reveal what components and other modules would need (for example you implement a method that's going to be used by store but it should not be available at components). 
+After you read this README you're going to have extensible and type-safe application state with unlimited structure. We're going to hide `store` variable to make it impossible to be used directly in your modules. Even though `store` is a nested object with all the methods and properties available, we're going to apply some TypeScript to reveal what components and other modules would need (for example you implement a method that's going to be used by store but it should not be available at components). 
 
-Components aren't going to be able to use nested syntax to access the store. Instead, we're going to use one level of object nesting in components (which means no `foo.bar.baz` to access a property in a store). Methods aren't going to be available for direct calls (`users.loadUsers()`) and you're going to need to export them manually.
+Components aren't going to be able to use nested syntax to access the store. Instead, we're going to use one level of object nesting in components (which means no `foo.bar.baz` to access a property in a store). Methods aren't going to be available for direct calls (`users.loadUsers()`) and you're going to export them manually.
 
 ```ts
 import users, { loadUsers } from './store/users';
