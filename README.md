@@ -424,7 +424,9 @@ export type OmitMethods<T> = Omit<T, Exclude<FunctionPropertyNames<T>, 'use'> | 
 
 The type also preserves `use` method and hides `store` property.
 
-Recommended way to protect your methods and even other properties from being used by other modules is to define two classes: one for publically available properties (let's call it "data"), another for privately available by sub-stores properties (or methods) and use `users as UserData` to override the default export type. At this case you don't need `OmitMethods` type anymore.
+----------
+
+Recommended way to protect your methods and other properties from being used by other modules is to define two classes: one for publically available properties and another for privately available at sub-stores properties and use the first class to override the default export type. At this case you don't need `OmitMethods` type anymore.
 
 ```ts
 // public data
@@ -432,7 +434,7 @@ class UserData extends Use0 {
   ids = [1, 2, 3];
 }
 
-// properties (incl methods) of the following class aren't available for other modules
+// private data
 export class User extends UserData { // inherit it from UserData
   readonly loadUsers = async () => {
     console.log(this.ids);
