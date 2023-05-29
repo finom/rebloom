@@ -219,7 +219,7 @@ export default class Users extends Use0 {
 }
 ```
 
-Destructure methods before they was used for better code.
+Destructure methods for better code before they was used in your component.
 
 ```ts
 const MyComponent = () => {
@@ -445,7 +445,7 @@ export const { loadUsers } = users;
 export default users as UserData; // override
 ```
 
-Use the same code for the root store to make `RootStore['users']` have all the methods available.
+Use the same pattern at the root store to make `RootStore['users']` have all the methods available.
 
 ```ts
 import Use0 from 'use-0';
