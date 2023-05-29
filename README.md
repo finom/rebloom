@@ -348,7 +348,7 @@ const MyComponent = () => {
 }
 ```
 
-If you need some root-level settings you can define another sub-store caled `App` for example.
+If you need some root-level settings you can define another sub-store caled `App` or `Settings`.
 
 ```ts
 // ./store/app
