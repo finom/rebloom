@@ -62,7 +62,7 @@ import baz, { method1, method2, method3 } from './store/foo/bar/baz';
 const MyComponent = () => {
   const ids = users.use('ids');
 
-  // users.profile or foo.bar.baz are unabailable 
+  // users.profile, foo.bar.baz, users.loadUsers are unabailable 
 
   useEffect(() => {
     loadUsers();
@@ -472,6 +472,8 @@ const MyComponent = () => {
   useEffect(() => {
     loadUsers();
   }, [ids]);
+
+  // ...
 }
 ```
 
