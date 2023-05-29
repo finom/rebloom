@@ -270,6 +270,7 @@ export class RootStore {
 }
 
 new RootStore(); // don't export, just initialise
+// optionally create a variable that is available at window.store
 ```
 
 After that import the module to initialise the store.
