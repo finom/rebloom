@@ -443,13 +443,12 @@ export class User extends UsersPublic { // inherit it from UsersPublic
 
 const users = new Users();
 
-// export users.loadUsers as a const
 export const { loadUsers } = users;
 
 export default users as UsersPublic; // override
 ```
 
-Use the same pattern at the root store to make `RootStore['users']` and other sub-stores to have all the methods available.
+Use the same pattern at the root store to make `RootStore['users']` and other sub-stores to have all "private" members available.
 
 ```ts
 import Use0 from 'use-0';
@@ -494,7 +493,7 @@ import users from './store/users';
 
 users.profiles.doSomething(); // error since "profiles" doesn't exist at UsersPublic class
 
-users.hiddenField++; // error
+users.hiddenField++; // also error
 ```
 
 Your complex component module imports are going to look similar to this:
@@ -529,7 +528,7 @@ profiles.use('something'); // no error
 
 1. Using patterns above we restrict the code and provide only one way to import the store by component modules: `import subStoreWithNoMethods, { method1, method2 } from './store/foo/bar/baz` where default export is used for "data" and named export is used for actions. It doesn't make sense to provide full store access to other modules that aren't related to the store.
 2. Store class methods still have full access to the store and other-sub stores at their methods using `this.store`.
-3. You get infinite scaling using less code and no additional concepts to learn.
+3. You get infinite scaling using a few lines code and no additional concepts to learn.
 
 ### (Optional) Split your methods
 
