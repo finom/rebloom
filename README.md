@@ -319,7 +319,7 @@ const MyComponent = () => {
 }
 ```
 
-At this case if you don't need direct access to the root store you can delete export of the variable to keep code safer.
+At this case if you don't need direct access to the root store you can delete export of the variable to keep code safer. You can also remove `extends Use0` from the `RootStore` class since its instance is not able to be used by components or other modules anymore.
 
 ```ts
 export class RootStore {
@@ -339,8 +339,7 @@ import './store';
 Now it's impossible to import the root store from other modules.
 
 ```ts
-// does not work anymore
-import store from './store'; 
+import store from './store'; // store is undefined
 // import sub-stores and methods instead
 import users, { loadUsers, createUser } from './store/users';
 
