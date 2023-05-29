@@ -471,7 +471,8 @@ class UserData extends Use0 {
 }
 
 class User extends UserData {
-  readonly profiles: Profiles; // not visible from the outside modules
+  hiddenField = 1;
+  readonly profiles: Profiles; // not visible by other modules
   readonly loadUsers = async () => {
     console.log(this.ids);
   }
@@ -482,7 +483,7 @@ const users = new Users();
 export default users as UserData;
 ```
 
-`profiles` sub-store is not available anymore when `users` is imported.
+`profiles` sub-store (as well as the `hiddenField` field) is not available anymore when `users` is imported since it doesn't exist at `UserData` class.
 
 ```ts
 import users from './store/users';
