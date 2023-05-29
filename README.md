@@ -509,7 +509,7 @@ For a very small app you can define your entire application state using `Use0.of
 import { of } from 'use-0';
 
 const store = of({
-  count = 1;
+  count = 1,
   companies: of({
     name: 'My company',
     someMethod:() { /* ... */ }
