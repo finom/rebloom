@@ -351,15 +351,15 @@ const MyComponent = () => {
 If you need some root-level settings you can define another sub-store caled `App` or `Settings`.
 
 ```ts
-// ./store/app
-class App extends Use0 {
+// ./store/settings
+class Settings extends Use0 {
   store!: RootStore;
   theme = 'dark';
 }
 
-const app = new App();
+const settings = new Settings();
 
-export default app;
+export default settings;
 ```
 
 
