@@ -63,7 +63,8 @@ const MyComponent = () => {
   const ids = users.use('ids');
   const companyName = companies.use('name'); 
 
-  // users.profile, foo.bar.baz, users.loadUsers are unabailable 
+  // nested things such as users.profile, foo.bar.baz, users.loadUsers are unabailable
+  // users.loadUsers(); // error
 
   useEffect(() => {
     loadUsers().then(() => {
