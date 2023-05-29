@@ -426,16 +426,16 @@ The type also preserves `use` method and hides `store` property.
 
 ----------
 
-Recommended way to protect your methods and other properties from being used by other modules is to define two classes: one for publically available properties and another for privately available at sub-stores properties and use the first class to override the default export type. At this case you don't need `OmitMethods` type anymore.
+Recommended way to protect your methods and other properties from being used by other modules is to define two classes: one for publically available properties and another for privately available at sub-stores properties and use the first class to override the default export type. At this case you don't need `OmitMethods` or any other fancy type type anymore.
 
 ```ts
 // public data
-class UserData extends Use0 {
+class UsersPublic extends Use0 {
   ids = [1, 2, 3];
 }
 
-// private data
-export class User extends UserData { // inherit it from UserData
+// private data and methods
+export class User extends UsersPublic { // inherit it from UsersPublic
   readonly loadUsers = async () => {
     console.log(this.ids);
   }
@@ -446,7 +446,7 @@ const users = new Users();
 // export users.loadUsers as a const
 export const { loadUsers } = users;
 
-export default users as UserData; // override
+export default users as UsersPublic; // override
 ```
 
 Use the same pattern at the root store to make `RootStore['users']` and other sub-stores to have all the methods available.
@@ -458,7 +458,7 @@ import companies, { type Companies } from './companies';
 
 export class RootStore extends Use0 {
   readonly users = users as Users; // override back
-  readonly companies = companies as Companies; // override back
+  readonly companies = companies as Companies;
   constructor() {
     super();
     this.users.store = this;
@@ -467,14 +467,14 @@ export class RootStore extends Use0 {
 }
 ```
 
-Using either `OmitMethods` or class splitting you can also hide other sub-stores.
+With class splitting you can also hide other sub-stores.
 
 ```ts
-class UserData extends Use0 {
+class UsersPublic extends Use0 {
   ids = [1, 2, 3];
 }
 
-class User extends UserData {
+class Users extends UsersPublic {
   hiddenField = 1;
   readonly profiles: Profiles; // sub-store that is not visible by other modules
   readonly loadUsers = async () => {
@@ -484,15 +484,17 @@ class User extends UserData {
 
 const users = new Users();
 
-export default users as UserData;
+export default users as UsersPublic;
 ```
 
-`profiles` sub-store (as well as the `hiddenField` field) is not available anymore when `users` is imported since it doesn't exist at `UserData` class.
+`profiles` sub-store (as well as the `hiddenField` field) is not available anymore when `users` is imported since it doesn't exist at `UsersPublic` class.
 
 ```ts
 import users from './store/users';
 
-users.profiles.doSomething(); // error since "profiles" doesn't exist at UserData class
+users.profiles.doSomething(); // error since "profiles" doesn't exist at UsersPublic class
+
+users.hiddenField++; // error
 ```
 
 Your complex component module imports are going to look similar to this:
