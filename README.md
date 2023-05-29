@@ -402,7 +402,7 @@ Since we're re-defined default export we need to update `RootStore` so `users` h
 
 ```ts
 import Use0 from 'use-0';
-import users, { Users } from './users';
+import users, { type Users } from './users';
 
 export class RootStore extends Use0 {
   readonly users = users as Users; // override back
@@ -449,8 +449,8 @@ Use the same code for the root store to make `RootStore['users']` have all the m
 
 ```ts
 import Use0 from 'use-0';
-import users, { Users } from './users';
-import companies, { Companies } from './companies';
+import users, { type Users } from './users';
+import companies, { type Companies } from './companies';
 
 export class RootStore extends Use0 {
   readonly users = users as Users; // override back
