@@ -406,9 +406,9 @@ export class RootStore extends Use0 {
 
 ### Conclusion
 
-1. Using patterns above we restrict the code and provide only one way to import the store by component modules: `import subStoreWithNoMethods, { method1, method2 } from './store/foo/bar/baz`. It doesn't make sense to provide full store access to other modules that aren't related to the store.
+1. Using patterns above we restrict the code and provide only one way to import the store by component modules: `import subStoreWithNoMethods, { method1, method2 } from './store/foo/bar/baz` where default export is used for "data" and named export is used for actions. It doesn't make sense to provide full store access to other modules that aren't related to the store.
 2. Store class methods still have full access to the store and other-sub stores at their methods using `this.store`.
-3. You get infinite scaling using less code.
+3. You get infinite scaling using less code and no additional concepts to learn.
 
 ### (Optional) Split your methods
 
