@@ -162,18 +162,16 @@ export default class Users extends Use0 {
 }
 ```
 
-It's recommended to destructure all methods that are going to be called to make it obvious and to write less code at hooks and components.
+Destructure methods before they was used for better code.
 
 ```ts
 const MyComponent = () => {
   const { increment, decrement, users: { loadUsers } } = store;
   // ...
 }
-```
 
-or better
+// or destructure above the component
 
-```ts
 const { increment, decrement, users: { loadUsers } } = store;
 
 const MyComponent = () => {
