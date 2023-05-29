@@ -213,6 +213,7 @@ export class RootStore extends Use0 {
   readonly users = users;
   readonly companies = companies;
   constructor() {
+    super();
     // you can write a function that automates that:
     // this.assignStore(users, companies, ...rest);
     users.store = this;
@@ -307,7 +308,7 @@ const MyComponent = () => {
 }
 ```
 
-To avoid that and make code stricter we can export the sub-store with its methos hidden.
+To avoid that and make code stricter we can export the sub-store with its methods hidden.
 
 ```ts
 export class Users extends Use0 {
@@ -329,6 +330,8 @@ import users, { loadUsers, createUser } from './store/users';
 
 const MyComponent = () => {
   const ids = users.use('ids');
+
+  // userd.ids = [...ids, 4];
 
   loadUsers();
 
@@ -362,9 +365,9 @@ type FunctionPropertyNames<T> = {
 export type OmitMethods<T> = Omit<T, Exclude<FunctionPropertyNames<T>, 'use'> | 'store'>;
 ```
 
-The type preserves `use` method and hides `store` property.
+The type also preserves `use` method and hides `store` property.
 
-An alternative way to protect your methods from being used by other module is to apply similar pattern but define two classes: one for data, another for methods. Then use `users as UserData` to override the default type. At this case you don't need `OmitMethods` type anymore.
+An alternative way to protect your methods from being used by other module is to apply similar pattern but define two classes: one for data, another for methods and use `users as UserData` to override the default type. At this case you don't need `OmitMethods` type anymore.
 
 ```ts
 class UserData extends Use0 {
@@ -401,8 +404,8 @@ export class RootStore extends Use0 {
 
 ### Conclusion
 
-1. Using patterns above we restrict the code and provide only one way to import the store by component modules: `import subStoreWithNoMethods, { method1, method2 } from './store/foo/bar/baz`. It doesn't make sense to provide full store access to other modules.
-2. Store class methods still have full access to the store and other-sub stores with their methods using `this.store`.
+1. Using patterns above we restrict the code and provide only one way to import the store by component modules: `import subStoreWithNoMethods, { method1, method2 } from './store/foo/bar/baz`. It doesn't make sense to provide full store access to other modules that aren't related to the store.
+2. Store class methods still have full access to the store and other-sub stores at their methods using `this.store`.
 3. You get infinite scaling using less code.
 
 ### (Optional) Split your methods
