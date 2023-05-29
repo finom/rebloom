@@ -77,7 +77,7 @@ const MyComponent = () => {
 }
 ```
 
-Shape of `RootStore` used at this example:
+Shape of `RootStore` used at the example:
 
 ```ts
 interface RootStore {
