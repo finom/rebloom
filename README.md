@@ -12,7 +12,7 @@
 </a>
 </p>
 
-> Tired of reduxes? Meet type-safe React state library for scalable apps with zero setup and zero additional knowledge required. No reducers, sagas or observers anymore, only TypeScript.
+> Type-safe React state library for scalable apps with zero setup and zero additional knowledge required. No reducers, sagas or observers anymore, only TypeScript!
 
 ## Quick start
 
