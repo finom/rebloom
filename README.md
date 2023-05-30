@@ -65,6 +65,8 @@ After you read this README you're going to have extensible and type-safe applica
 
 Components aren't going to be able to use nested syntax to access the store. Instead, we're going to use one level of object nesting in components (which means no `foo.bar.baz` to access a property in a store). Methods aren't going to be available for direct calls (`users.loadUsers()`) and you're going to export them manually.
 
+The goal is to provide to a component only what it needs but never full access to the store.
+
 ```ts
 import users, { loadUsers } from './store/users';
 import profile, { loadProfile, updateProfile } from './store/users/profiles';
@@ -377,7 +379,6 @@ If you need some root-level properties you can define another sub-store caled `A
 ```ts
 // ./store/settings
 class Settings extends Use0 {
-  store!: RootStore;
   theme = 'dark';
 }
 
