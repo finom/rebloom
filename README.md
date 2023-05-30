@@ -20,6 +20,7 @@
 - [Intro](#intro)
 - [Basics](#basics)
 - [Split store into files](#split-store-into-files)
+    - [Basic file structure](#basic-file-structure)
     - [Scalable file structure](#scalable-file-structure)
     - [Advanced data protection](#advanced-data-protection)
     - [Nested store](#nested-store)
