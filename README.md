@@ -682,7 +682,7 @@ Your file structure is going to look like that:
 
 ### Conclusion
 
-1. Using patterns above we restrict the code and provide only one way to import the store by component modules: `import publicData, { method1, method2 } from './store/foo/bar/baz` where default export is used for "data" and named export is used for actions. It doesn't make sense to provide full store access to other modules that aren't related to the store.
+1. Using patterns above we restrict the code and provide only one way to import the store by component modules: `import publicData, { method1, method2 } from './store/foo/bar/baz` where default export is used for public properties and named export is used for actions. It doesn't make sense to provide full store access to other modules that aren't related to the store.
 2. Store class methods still have full access to the store and other-sub stores at their methods using privately available `this.store`.
 3. You get unlimited scaling using a few lines code and no additional concepts to learn.
 
@@ -708,7 +708,7 @@ class UserMethodsPartTwo extends UserMethodsPartOne {
 class Users extends UserMethodsPartTwo { /* ... */ }
 ```
 
-If you want to refactor further then move methods to another file or split them into individual files.
+If you want to refactor further then move methods as individual functions to another file or split them into individual files to re-export them in `methods.ts`.
 
 ```ts
 // ./store/users/methods.ts
@@ -740,6 +740,13 @@ export class Users extends Use0 {
 ```
 
 You may want to define your method without `this` to unbind it preserving the context.
+
+```ts
+store.users.loadUsers; // no error but ...
+
+// error because "typeof m.loadUsers" requires "this: Users" context
+const { loadUsers } = store.users;
+```
 
 ```ts
 type RemoveThis<F extends (this: any, ...args: any[]) => any> = F extends (this: infer T, ...args: infer A) => infer R ? (...args: A) => R : never;
