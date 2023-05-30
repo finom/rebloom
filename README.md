@@ -845,7 +845,7 @@ const MyComponent = () => {
 }
 ```
 
-You can also define custom record:
+You can also define a custom record:
 
 ```ts
 interface Item {
