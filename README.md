@@ -45,7 +45,7 @@ import Use0 from 'use-0';
 // 1. Define your root store
 // Use0 adds a "use" method to the RootStore instance; that's all it does.
 class RootStore extends Use0 {
-  count: 1;
+  count = 1;
 }
 
 const store = new RootStore();
@@ -478,7 +478,7 @@ class UsersPublic extends Use0 {
 }
 
 // private properties
-export class User extends UsersPublic { // inherit it from UsersPublic
+export class Users extends UsersPublic { // inherit it from UsersPublic
   readonly loadUsers = async () => {
     console.log(this.ids);
   }
@@ -808,10 +808,10 @@ For a very small app you can define your entire application state using `Use0.of
 import { of } from 'use-0';
 
 const store = of({
-  count = 1,
+  count: 1,
   companies: of({
     name: 'My company',
-    someMethod:() { /* ... */ }
+    someMethod() { /* ... */ }
   }),
 });
 
