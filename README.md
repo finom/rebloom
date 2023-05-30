@@ -811,7 +811,7 @@ const store = of({
   count: 1,
   companies: of({
     name: 'My company',
-    someMethod() { /* ... */ }
+    someMethod: () => { console.log(store); },
   }),
 });
 
