@@ -14,6 +14,23 @@
 
 > Type-safe React state library for scalable apps with zero setup and zero additional knowledge required. Here you'll find tiny documentation with very detailed examples on how use the library, how to use it with standard hooks such as `useEffect`, how to to protect private data and actions from being used by components, how to avoid direct access to root store and also how to structure your files for a large-scale app.
 
+<!-- TOC -->
+
+- [Quick start](#quick-start)
+- [Intro](#intro)
+- [Basics](#basics)
+- [Split store into files](#split-store-into-files)
+    - [Scalable file structure](#scalable-file-structure)
+    - [Advanced data protection](#advanced-data-protection)
+    - [Nested store](#nested-store)
+    - [Conclusion](#conclusion)
+- [Additional information](#additional-information)
+    - [Split your methods](#split-your-methods)
+    - [Alternative syntax](#alternative-syntax)
+- [Use0.of](#use0of)
+
+<!-- /TOC -->
+
 ## Quick start
 
 ```sh
@@ -42,7 +59,7 @@ export default () => {
 }
 ```
 
-## Slow start
+## Intro
 
 After you read this README you're going to have extensible and type-safe application state with unlimited structure. We're going to hide `store` variable to make it impossible to be used directly in your modules. Even though `store` is a nested object with all the methods and properties available, we're going to apply some TypeScript to reveal what components and other modules would need (for example you implement a method that's going to be used by store but it should not be available at components). 
 
@@ -104,7 +121,7 @@ interface RootStore {
 }
 ```
 
-----------
+## Basics
 
 Create your store with ES6 classes extended by `Use0`. It's recommended to split it into multiple objects that I call "sub-stores". In the example below `Users` and `Companies` are sub-stores. Level of nesting is unlimited as for any other JavaScript object.
 
@@ -183,7 +200,7 @@ if (typeof window !== 'undefined' && process.env.NODE_ENV === 'development') {
 }
 ```
 
-### Split store into files
+## Split store into files
 
 You can split sub-stores into multiple files and access the root store using the first argument.
 
@@ -236,9 +253,9 @@ const MyComponent = () => {
 }
 ```
 
-----------
+### Scalable file structure
 
-Another way to build your store is to export instances of sub-stores instead of classes.
+Another way to build your store is to export instances of sub-stores instead of classes. To make the root store to be available we're going to use `init` method instead of a constructor.
 
 ```ts
 // ./store/users.ts
@@ -246,7 +263,10 @@ import Use0 from 'use-0';
 import type { RootStore } from '.';
 
 class Users extends Use0 {
-  store!: RootStore; // ! allows to define "store" property later
+  private store!: RootStore; // ! symbol allows to define "store" property outside of counstructor
+  readonly init: (store: RootStore) => {
+    this.store = store;
+  }
   readonly loadUsers = () => {
     // you have access to any part of the store
     this.store.companies.doSomething();
@@ -259,7 +279,7 @@ const users = new Users();
 export default users;
 ```
 
-Then assign `store` value to sub-stores manually.
+Then call `init` for every sub-store you have.
 
 ```ts
 import Use0 from 'use-0';
@@ -272,9 +292,9 @@ export class RootStore extends Use0 {
   constructor() {
     super();
     // you can write a function that automates that:
-    // this.assignStore(users, companies, ...rest);
-    users.store = this;
-    companies.store = this;
+    // this.initStore(users, companies, ...rest);
+    users.init(this);
+    companies.init(this);
   }
 }
 ```
@@ -284,8 +304,9 @@ This way to architect the store makes possible to export sub-stores and their me
 ```ts
 // ./store/users.ts
 class Users extends Use0 {
-  store!: RootStore;
+  private store!: RootStore;
   ids = [1, 2, 3];
+  readonly init: (store: RootStore) => { this.store = store; }
   readonly loadUsers = async () => {
     // this.store.doSomething();
   }
@@ -351,7 +372,7 @@ const MyComponent = () => {
 
 Now the only way to access the root store is to use it at sub-store methods.
 
-If you need some root-level settings you can define another sub-store caled `App` or `Settings`.
+If you need some root-level properties you can define another sub-store caled `App` or `Settings`.
 
 ```ts
 // ./store/settings
@@ -383,7 +404,7 @@ const MyComponent = () => {
 }
 ```
 
-To avoid that and make code stricter we can export the sub-store with its methods hidden.
+To avoid that and make code stricter we can export the sub-store with its methods hidden. The simplest way is to use `OmitMethods` type.
 
 ```ts
 export class Users extends Use0 {
@@ -425,7 +446,7 @@ export class RootStore extends Use0 {
   readonly users = users as Users; // override back
   constructor() {
     super();
-    this.users.store = this;
+    this.users.init(this);
   }
 }
 ```
@@ -442,17 +463,17 @@ export type OmitMethods<T> = Omit<T, Exclude<FunctionPropertyNames<T>, 'use'> | 
 
 The type also preserves `use` method and hides `store` property.
 
-----------
+### Advanced data protection
 
-Recommended way to protect your methods and other properties from being used by other modules is to define two classes: one for publically available properties and another for privately available at sub-stores properties and use the first class to override the default export type. At this case you don't need `OmitMethods` or any other fancy type type anymore.
+Recommended way to protect your methods and other properties from being used by other modules is to define two classes: one for publically available properties and another for privately available at sub-stores properties and use the first class to override the default export type. At this case you don't need `OmitMethods` or any other fancy type anymore.
 
 ```ts
-// public data
+// public properties
 class UsersPublic extends Use0 {
   ids = [1, 2, 3];
 }
 
-// private data and methods
+// private properties
 export class User extends UsersPublic { // inherit it from UsersPublic
   readonly loadUsers = async () => {
     console.log(this.ids);
@@ -478,8 +499,8 @@ export class RootStore extends Use0 {
   readonly companies = companies as Companies;
   constructor() {
     super();
-    this.users.store = this;
-    this.companies.store = this;
+    this.users.init(this);
+    this.companies.init(this);
   }
 }
 ```
@@ -514,41 +535,146 @@ users.profiles.doSomething(); // error since "profiles" doesn't exist at UsersPu
 users.hiddenField++; // also error
 ```
 
-Your complex component module imports are going to look similar to this:
-
-```ts
-import users, { loadUsers } from './store/users';
-import profile, { loadProfile, updateProfile } from './store/users/profiles';
-import companies, { deleteCompany } from './store/companies';
-import baz, { method1, method2, method3 } from './store/foo/bar/baz';
-
-const MyComponent = () => {
-  const ids = users.use('ids');
-
-  useEffect(() => {
-    loadUsers();
-  }, [ids]);
-
-  // ...
-}
-```
-
 And you cannot use nested store properties anymore since sub-stores are protected.
 
 ```ts
+import users from './store/users';
+import profiles from './store/users/profiles';
+
 users.profiles.use('something'); // error
 
 // but
 profiles.use('something'); // no error
 ```
 
+### Nested store
+
+For a nested sub-store follow the same pattern and call `init` method to provide access to the root store.
+
+```ts
+// ./store/users/index.ts
+import profiles, { type Profiles } from './profiles';
+
+// class UsersPublic extends Use0 { ... }
+
+class Users extends UsersPublic {
+  private store!: RootStore;
+  readonly profiles = profiles as Profiles;
+  readonly init: (store: RootStore) {
+    this.store = store;
+    this.profiles.init(store);
+  }
+}
+```
+
+```ts
+// ./store/users/profiles/index.ts
+class ProfilesPublic extends Use0 {
+  myProfileEmail = 'hello@example.com';
+}
+
+class Profiles extends ProfilesPublic {
+  private store!: RootStore;
+
+  readonly init = (store: RootStore) {
+    this.store = store;
+  }
+  
+  readonly updateProfile = async () => {
+    // this.store.something.something();
+  }
+}
+
+const profiles = new Profiles();
+
+export default profiles as ProfilesPublic;
+```
+
+Your file structure may look similar to this:
+
+```
+/index.ts
+/companies/
+  /index.ts
+/users/
+  /index.ts
+  /profiles
+    /index.ts
+```
+
+----------
+
+To split sub-stores into smaller size you can:
+
+- Define file for public properties class.
+- Define file for protected properties class and extend it from the public properties class.
+- Initialise the protected class at `index.ts` and export public modules.
+
+You can define any file naming convention, but at this example I'm going to use `public.ts` for public properties and `protected.ts` for protected properties.
+
+```ts
+// ./store/users/public.ts
+import Use0 from 'use-0';
+
+export class UsersPublic extends Use0 {
+  ids = [1, 2, 3];
+}
+```
+
+```ts
+// ./store/users/protected.ts
+import UsersPublic from './public';
+
+export class Users extends UsersPublic {
+  private store!: RootStore;
+  readonly loadUsers = async () => {
+    console.log(this.ids);
+  }
+  readonly init = (store: RootStore) => { this.store = store; }
+}
+```
+
+```ts
+// ./store/users/index.ts
+import { UsersPublic } from './public';
+import { Users } from './protected';
+
+
+const users = new Users();
+
+export const { loadUsers } = users;
+export { Users }; // re-export for lower-level sub-stores
+export default users as UsersPublic;
+```
+
+Your file structure is going to look like that:
+
+```
+/index.ts
+/companies/
+  /index.ts
+  /public.ts
+  /protected.ts
+/users/
+  /index.ts
+  /public.ts
+  /protected.ts
+  /profiles
+    /index.ts
+    /public.ts
+    /protected.ts
+```
+
+
 ### Conclusion
 
-1. Using patterns above we restrict the code and provide only one way to import the store by component modules: `import subStoreWithNoMethods, { method1, method2 } from './store/foo/bar/baz` where default export is used for "data" and named export is used for actions. It doesn't make sense to provide full store access to other modules that aren't related to the store.
+1. Using patterns above we restrict the code and provide only one way to import the store by component modules: `import publicData, { method1, method2 } from './store/foo/bar/baz` where default export is used for "data" and named export is used for actions. It doesn't make sense to provide full store access to other modules that aren't related to the store.
 2. Store class methods still have full access to the store and other-sub stores at their methods using `this.store`.
 3. You get infinite scaling using a few lines code and no additional concepts to learn.
 
-### (Optional) Split your methods
+## Additional information
+
+### Split your methods
 
 In case if a class is too big because of long methods you can move them to another file. This way allows to refactor further by moving methods to individual files and re-exporting them in one file.
 
@@ -581,7 +707,7 @@ export class Users extends Use0 {
 }
 ```
 
-You may want to define your method with this type that allows to unbind it preserving the `this` context.
+You may want to define your method without `this` to unbind it preserving the context.
 
 ```ts
 type RemoveThis<F extends (this: any, ...args: any[]) => any> = F extends (this: infer T, ...args: infer A) => infer R ? (...args: A) => R : never;
@@ -599,6 +725,39 @@ Type `RemoveThis` allows to fix a TypeScript error that appears when you assign 
 ```ts
 const { loadUsers } = store.users; // no error
 ```
+
+### Alternative syntax
+
+If you don't like this fancy `object.use(key)` hook, you can avoid it. **use-0** is dependent on another project called [use-change](https://github.com/finom/use-change). It exports `useChange` hook that works just like `useState` but accepts sub-store (or any custom object) as first argument and key as second argument.
+
+```ts
+import useChange from 'use-change';
+import users, { loadUsers } from './store/users';
+
+const MyComponent = () => {
+  const [ids, setIds] = useChange(users, 'ids');
+
+  // ...
+
+  console.log(ids);
+
+  setIds(v => [...v, id]);
+}
+```
+
+To achive that:
+
+1. Don't install **use-0**
+2. Install **use-change** with `npm i use-change`
+3. Don't inherit classes `Use0` class.
+
+```ts
+class UsersPublic { /*...*/ } // don't extend Use0
+
+class Users extends UsersPublic { /*...*/ }
+```
+
+The rest instructions from this README are the same.
 
 ## Use0.of
 
