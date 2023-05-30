@@ -327,6 +327,21 @@ export const { loadUsers, createUser } = users;
 export default users;
 ```
 
+> Tip: Use `use` hook provided by React to call your async methods.
+
+```tsx
+import { use } from 'react';
+import users, { loadUsers } from './store/users';
+
+const MyComponent = () => {
+  const users = use(loadUsers());
+
+  return (
+    <div>{users.map(/* ... */)}</div>
+  );
+}
+```
+
 Then you can import the sub-store and the methods to your component.
 
 ```ts
@@ -389,7 +404,6 @@ const settings = new Settings();
 
 export default settings;
 ```
-
 
 ----------
 
@@ -667,6 +681,8 @@ Your file structure is going to look like that:
     /public.ts
     /protected.ts
 ```
+
+
 
 ### Conclusion
 
