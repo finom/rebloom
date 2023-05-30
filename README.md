@@ -280,7 +280,7 @@ class Users extends Use0 {
 
 const users = new Users();
 
-export default users;
+export default users; // default export of the instance instead of the class
 ```
 
 Then call `init` for every sub-store you have.
@@ -641,7 +641,7 @@ export class UsersPublic extends Use0 {
 // ./store/users/protected.ts
 import { UsersPublic } from './public';
 
-export class Users extends UsersPublic {
+export class UsersProtected extends UsersPublic {
   private store!: RootStore;
   readonly loadUsers = async () => {
     console.log(this.ids);
@@ -653,12 +653,12 @@ export class Users extends UsersPublic {
 ```ts
 // ./store/users/index.ts
 import { UsersPublic } from './public';
-import { Users } from './protected';
+import { UsersProtected } from './protected';
 
-const users = new Users();
+const users = new UsersProtected();
 
 export const { loadUsers } = users;
-export type { Users }; // re-export for lower-level sub-stores
+export type { UsersProtected }; // re-export for lower-level sub-stores
 export default users as UsersPublic;
 ```
 
@@ -679,8 +679,6 @@ Your file structure is going to look like that:
     /public.ts
     /protected.ts
 ```
-
-
 
 ### Conclusion
 
