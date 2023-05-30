@@ -576,17 +576,17 @@ class ProfilesPublic extends Use0 {
 
 class Profiles extends ProfilesPublic {
   private store!: RootStore;
-
-  readonly init = (store: RootStore) {
+  readonly init = (store: RootStore) => {
     this.store = store;
   }
-  
   readonly updateProfile = async () => {
     // this.store.something.something();
   }
 }
 
 const profiles = new Profiles();
+
+export const { updateProfile } = profiles;
 
 export default profiles as ProfilesPublic;
 ```
@@ -605,7 +605,7 @@ Your file structure may look similar to this:
 
 ----------
 
-To split sub-stores into smaller size you can:
+To split sub-stores into smaller files you can:
 
 - Define file for public properties class.
 - Define file for protected properties class and extend it from the public properties class.
@@ -624,7 +624,7 @@ export class UsersPublic extends Use0 {
 
 ```ts
 // ./store/users/protected.ts
-import UsersPublic from './public';
+import { UsersPublic } from './public';
 
 export class Users extends UsersPublic {
   private store!: RootStore;
@@ -640,11 +640,10 @@ export class Users extends UsersPublic {
 import { UsersPublic } from './public';
 import { Users } from './protected';
 
-
 const users = new Users();
 
 export const { loadUsers } = users;
-export { Users }; // re-export for lower-level sub-stores
+export type { Users }; // re-export for lower-level sub-stores
 export default users as UsersPublic;
 ```
 
