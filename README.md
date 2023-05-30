@@ -665,7 +665,6 @@ Your file structure is going to look like that:
     /protected.ts
 ```
 
-
 ### Conclusion
 
 1. Using patterns above we restrict the code and provide only one way to import the store by component modules: `import publicData, { method1, method2 } from './store/foo/bar/baz` where default export is used for "data" and named export is used for actions. It doesn't make sense to provide full store access to other modules that aren't related to the store.
