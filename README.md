@@ -708,7 +708,7 @@ class UserMethodsPartTwo extends UserMethodsPartOne {
 class Users extends UserMethodsPartTwo { /* ... */ }
 ```
 
-If you want to refactor further then move methods as individual functions to another file or split them into individual files to re-export them in `methods.ts`.
+If you want to refactor further then move methods as individual functions to another file.
 
 ```ts
 // ./store/users/methods.ts
@@ -718,34 +718,61 @@ export async function loadUsers(this: Users, something: string) {
   // this.store.increment();
   console.log(this.ids);
 }
+
+export default async function createUser(this: Users) { /* ... */ }
 ```
 
-Then make the methods available at the class by binding instance context to the methods using `bind`.
+Or split them into individual files.
+
+```ts
+// ./store/users/methods/loadUsers.ts
+// same pattern for createUser.ts
+export default async function loadUsers(this: Users, something: string) {
+  // this.store.increment();
+  console.log(this.ids);
+}
+```
+
+Then re-export them in one module.
+
+```ts
+// ./store/users/methods/index.ts
+import loadUsers from './loadUsers';
+import createUser from './createUser';
+
+export { loadUsers, createUser };
+```
+
+Then to make the functions available at the class as methods you should update `this` context using `bind`.
 
 ```ts
 // ./store/users/index.ts
 import * as m from './methods';
 
 export class Users extends Use0 {
+  ids = [1, 2, 3];
   store!: RootStore;
   readonly loadUsers: typeof m.loadUsers;
-  ids = [1, 2, 3];
+  readonly createUser: typeof m.createUser;
   constructor() {
     super();
     // you can write a function that automates that
     // this.rebind(m) or super(m)
-    this.loadUsers = m.loadUsers.bind(this); // makes "this: Users" context available at the function
+    this.loadUsers = m.loadUsers.bind(this);
+    this.createUser = m.createUser.bind(this); // makes "this: Users" context available at the function
   }
 }
 ```
 
-You may want to define your method without `this` to unbind it preserving the context.
+You may want to define type of your method without `this` to unbind it preserving the context.
 
 ```ts
-store.users.loadUsers; // no error but ...
+store.users.loadUsers(); // no error but ...
+
+const { loadUsers } = store.users;
 
 // error because "typeof m.loadUsers" requires "this: Users" context
-const { loadUsers } = store.users;
+loadUsers();
 ```
 
 ```ts
@@ -767,7 +794,7 @@ const { loadUsers } = store.users; // no error
 
 ### Alternative syntax
 
-If you don't like this fancy `object.use(key)` hook, you can avoid it. **use-0** is dependent on another project called [use-change](https://github.com/finom/use-change). It exports `useChange` hook that works just like `useState` but accepts sub-store (or any custom object) as first argument and key as second argument.
+If you don't like this fancy `object.use(key)` hook, you can avoid it. **use-0** is dependent on another project called [use-change](https://github.com/finom/use-change). It exports `useChange` hook that works just like `React.useState` but accepts sub-store (or any custom object) as first argument and key as second argument.
 
 ```ts
 import useChange from 'use-change';
