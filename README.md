@@ -51,7 +51,7 @@ const store = new RootStore();
 
 // 2. Use
 export default () => {
-  const count = store.use('count'); // same as store['count'] but works as a hook
+  const count = store.use('count'); // same as store.count but works as a hook
 
   return (
     <div onClick={() => store.count++}>Clicks: {count}</div>
@@ -820,8 +820,8 @@ export default store;
 import store from './store';
 
 const MyComponent = () => {
-  const count = store.use('count'); // same as store['count'] but works as a hook
-  const name = store.companies.use('name'); // same as store.companies['name'] but works as a hook
+  const count = store.use('count'); // same as store.count but works as a hook
+  const name = store.companies.use('name'); // same as store.companies.name but works as a hook
 
   // store.companies.someMethod();
   // store.companies.name = 'Hello'; // triggers the component to re-render
