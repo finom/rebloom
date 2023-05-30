@@ -66,7 +66,7 @@ After you read this README you're going to have extensible and type-safe applica
 
 Components aren't going to be able to use nested syntax to access the store. Instead, we're going to use one level of object nesting in components (which means no `foo.bar.baz` to access a property in a store). Methods aren't going to be available for direct calls (`users.loadUsers()`) and you're going to export them manually.
 
-The goal is to provide to a component only what it needs but never full access to the store.
+The goal is to provide to a component only what it needs but never full access to the store. We'll start from basic examples.
 
 ```ts
 import users, { loadUsers } from './store/users';
@@ -156,7 +156,7 @@ export default store;
 
 Use the `readonly` prefix to prevent class members from being reassigned.
 
-Call `use` method to access `store` object properties in your component.
+Call `use` method to access object properties in your component.
 
 ```ts
 import store from './store';
@@ -273,7 +273,6 @@ class Users extends Use0 {
     this.store = store;
   }
   readonly loadUsers = () => {
-    // you have access to any part of the store
     this.store.companies.doSomething();
     // ...
   }
@@ -327,20 +326,6 @@ export const { loadUsers, createUser } = users;
 export default users;
 ```
 
-> Tip: Use `use` hook provided by React to call your async methods.
-
-```tsx
-import { use } from 'react';
-import users, { loadUsers } from './store/users';
-
-const MyComponent = () => {
-  const users = use(loadUsers());
-
-  return (
-    <div>{users.map(/* ... */)}</div>
-  );
-}
-```
 
 Then you can import the sub-store and the methods to your component.
 
@@ -392,6 +377,21 @@ const MyComponent = () => {
 
 Now the only way to access the root store is to use it at sub-store methods.
 
+> Tip: Use `use` hook provided by experimental version of React to call your async methods in a nice manner.
+
+```tsx
+import { use } from 'react';
+import users, { loadUsers } from './store/users';
+
+const MyComponent = () => {
+  const items = use(loadUsers()); // no await
+
+  return (
+    <div>{items.map(/* ... */)}</div>
+  );
+}
+```
+
 If you need some root-level properties you can define another sub-store caled `App` or `Settings`.
 
 ```ts
@@ -415,14 +415,14 @@ import users, { loadUsers, createUser } from './store/users';
 const MyComponent = () => {
   const ids = users.use('ids');
 
-  loadUsers();
+  loadUsers(); // good
 
-  users.loadUsers();
+  users.loadUsers(); // bad
   // ...
 }
 ```
 
-To avoid that and make code stricter we can export the sub-store with its methods hidden. The simplest way is to use `OmitMethods` type.
+To avoid that we can export the sub-store with its methods hidden. The simplest way is to use `OmitMethods` type.
 
 ```ts
 export class Users extends Use0 {
@@ -445,9 +445,7 @@ import users, { loadUsers, createUser } from './store/users';
 const MyComponent = () => {
   const ids = users.use('ids');
 
-  // userd.ids = [...ids, 4];
-
-  loadUsers();
+  loadUsers(); // OK
 
   users.loadUsers(); // error
   // ...
@@ -476,10 +474,10 @@ type FunctionPropertyNames<T> = {
   [K in keyof T]: T[K] extends (...args: any[]) => any ? K : never;
 }[keyof T];
   
-export type OmitMethods<T> = Omit<T, Exclude<FunctionPropertyNames<T>, 'use'> | 'store'>;
+export type OmitMethods<T> = Exclude<FunctionPropertyNames<T>, 'use'>;
 ```
 
-The type also preserves `use` method and hides `store` property.
+The type also preserves `use` method to be used at hooks.
 
 ### Advanced data protection
 
@@ -694,7 +692,25 @@ Your file structure is going to look like that:
 
 ### Split your methods
 
-In case if a class is too big because of long methods you can move them to another file. This way allows to refactor further by moving methods to individual files and re-exporting them in one file.
+In case if a class is too big because of long methods you can move them to another class. 
+
+```ts
+class UserPublic extends Use0 {
+  ids: [1, 2, 3];
+}
+
+class UserMethodsPartOne extends UserPublic {
+  readonly someLargeMethod = () => { /* ... */ }
+}
+
+class UserMethodsPartTwo extends UserMethodsPartOne {
+  readonly anotherLargeMethod = () => { /* ... */ }
+}
+
+class Users extends UserMethodsPartTwo { /* ... */ }
+```
+
+If you want to refactor further then move methods to another file or split them into individual files.
 
 ```ts
 // ./store/users/methods.ts
@@ -759,20 +775,22 @@ const MyComponent = () => {
 
   console.log(ids);
 
-  setIds(v => [...v, id]);
+  setIds([...ids, id]);
+
+  setIds(ids => [...ids, id]);
 }
 ```
 
 To achive that:
 
-1. Don't install **use-0**
-2. Install **use-change** with `npm i use-change`
-3. Don't inherit classes `Use0` class.
+1. Don't install **use-0**.
+2. Install **use-change** with `npm i use-change`.
+3. Don't inherit classes from `Use0` class.
 
 ```ts
-class UsersPublic { /*...*/ } // don't extend Use0
+class UsersPublic { /* ... */ } // don't "extend Use0"
 
-class Users extends UsersPublic { /*...*/ }
+class Users extends UsersPublic { /* ... */ }
 ```
 
 The rest instructions from this README are the same.
@@ -785,12 +803,14 @@ If you don't want to define a class, you can use this static method. `Use0.of<T>
 class RootStore extends Use0 {
   readonly coordinates = Use0.of({ x: 0, y: 100 });
   // ...
+}
 
 const MyComponent = () => {
   const x = store.coordinates.use('x');
   const y = store.coordinates.use('y');
-  // ..
+  // ...
   // store.coordinates.x = 100;
+}
 ```
 
 You can also define custom record:
@@ -820,7 +840,7 @@ const MyComponent = ({ id }: { id: string }) => {
 For a very small app you can define your entire application state using `Use0.of` method (also exported as a constant).
 
 ```ts
-// store.ts
+// ./store.ts
 import { of } from 'use-0';
 
 const store = of({
