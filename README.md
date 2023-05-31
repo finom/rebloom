@@ -365,7 +365,6 @@ const MyComponent = () => {
 
 At this case if you don't need direct access to the root store you can delete export of the variable to keep code safer. You can also remove `extends Use0` from the `RootStore` class since its instance is not able to be used by components or other modules anymore.
 
-
 ```ts
 export class RootStore {
   // ...
@@ -430,7 +429,7 @@ const store = _store as RootStore;
 console.log(store); // now it's OK
 ```
 
-To fix ESLint error about `_` symbol in the variable name you can modify the rule:
+To fix ESLint error about `_` symbol in the variable name you can modify the following rule:
 
 ```ts
 '@typescript-eslint/naming-convention': [2, { leadingUnderscore: true }]
