@@ -303,6 +303,24 @@ export class RootStore extends Use0 {
 }
 ```
 
+You can create `initStore` method to handle that automatically.
+
+```ts
+export class RootStore extends Use0 {
+  // ...
+  constructor() {
+    super();
+    this.initStore();
+  }
+
+  initStore = () => {
+    for(const member of Object.values(this)) {
+      if(typeof member.init === 'function') member.init(this);
+    }
+  }
+}
+```
+
 This way to architect the store makes possible to export sub-stores and their methods separate from the root store.
 
 ```ts
@@ -412,7 +430,7 @@ const store = _store as RootStore;
 console.log(store); // now it's OK
 ```
 
-To fix Eslint error about `_` symbol in the variable name you can modify the rule:
+To fix ESLint error about `_` symbol in the variable name you can modify the rule:
 
 ```ts
 '@typescript-eslint/naming-convention': [2, { leadingUnderscore: true }]
