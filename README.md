@@ -392,6 +392,32 @@ const MyComponent = () => {
 }
 ```
 
+If you still need access to the root store for some particular module you can import store as `never` and then convert it back to `RootStore`.
+
+```ts
+class RootStore() {}
+
+const store = new RootStore();
+
+export const _store as never;
+```
+
+```ts
+import { _store, RootStore } from './store';
+
+console.log(_store); // error since _store has type "never"
+
+const store = _store as RootStore;
+
+console.log(store); // now it's OK
+```
+
+To fix Eslint error about `_` symbol in the variable name you can modify the rule:
+
+```ts
+'@typescript-eslint/naming-convention': [2, { leadingUnderscore: true }]
+```
+
 If you need some root-level properties you can define another sub-store caled `App` or `Settings`.
 
 ```ts
