@@ -532,8 +532,8 @@ class UsersPublic extends Use0 {
   ids = [1, 2, 3];
 }
 
-// private properties
-export class Users extends UsersPublic { // inherit it from UsersPublic
+// protected properties
+export class UsersProtected extends UsersPublic { // inherit it from UsersPublic
   readonly loadUsers = async () => {
     console.log(this.ids);
   }
@@ -571,7 +571,7 @@ class UsersPublic extends Use0 {
   ids = [1, 2, 3];
 }
 
-class Users extends UsersPublic {
+class UsersProtected extends UsersPublic {
   hiddenField = 1;
   readonly profiles: Profiles; // sub-store that is not visible by other modules
   readonly loadUsers = async () => {
@@ -606,6 +606,26 @@ users.profiles.use('something'); // error
 profiles.use('something'); // no error
 ```
 
+You still can define a nested object inside your public class.
+
+```ts
+class UsersPublic extends Use0 {
+  ids = [1, 2, 3]
+  nested: {
+    foo: { bar: { baz: 'hello' }}
+  };
+}
+```
+
+And access it as expected.
+
+```ts
+import users from './store/users';
+
+// works since "foo" property is public
+console.log(users.foo.bar.baz);
+```
+
 ### Nested store
 
 For a nested sub-store follow the same pattern and call `init` method to provide access to the root store.
@@ -616,7 +636,7 @@ import profiles, { type Profiles } from './profiles';
 
 // class UsersPublic extends Use0 { ... }
 
-class Users extends UsersPublic {
+class UsersProtected extends UsersPublic {
   private store!: RootStore;
   readonly profiles = profiles as Profiles;
   readonly init: (store: RootStore) {
@@ -733,7 +753,7 @@ Your file structure is going to look like that:
 
 ### Split your methods
 
-In case if a class is too big because of long methods you can move them to another class. 
+If you have large methods the most obvious way to refactor your sub-store would be to create more classes. 
 
 ```ts
 class UserPublic extends Use0 {
@@ -751,18 +771,18 @@ class UserMethodsPartTwo extends UserMethodsPartOne {
 class Users extends UserMethodsPartTwo { /* ... */ }
 ```
 
-If you want to refactor further then move methods as individual functions to another file.
+But it's too hard to manage the enheritance chain. Instead, move methods as individual functions to another file.
 
 ```ts
 // ./store/users/methods.ts
-import type { Users } from ".";
+import type { UsersProtected } from ".";
 
-export async function loadUsers(this: Users, something: string) {
+export async function loadUsers(this: UsersProtected, something: string) {
   // this.store.increment();
   console.log(this.ids);
 }
 
-export default async function createUser(this: Users) { /* ... */ }
+export default async function createUser(this: UsersProtected) { /* ... */ }
 ```
 
 Or split them into individual files.
@@ -865,7 +885,7 @@ To achive that:
 ```ts
 class UsersPublic { /* ... */ } // don't "extend Use0"
 
-class Users extends UsersPublic { /* ... */ }
+class UsersProtected extends UsersPublic { /* ... */ }
 ```
 
 The rest instructions from this README are the same.
