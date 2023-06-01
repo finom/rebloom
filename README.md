@@ -910,6 +910,7 @@ You can also define a custom record:
 
 ```ts
 interface Item {
+  id: string;
   hello: string;
 }
 
@@ -930,7 +931,56 @@ const MyComponent = ({ id }: { id: string }) => {
   // store.data[id] = someValue; // triggers the component to re-render
 ```
 
+----------
+
+If you have an array of ids and corresponding id-object (key-value) pairs you can turn this array of IDs into array of objects using `Array#map` and `use` method.
+
+```ts
+export class RootStore extends Use0 {
+  data: Use0.of<Record<string, Item>>({
+    item_1: {
+      id: 'item_1',
+      hello: 'World',
+    },
+    item_2: {
+      id: 'item_2',
+      hello: 'Everybody',
+    }
+    // ...
+  });
+  // ...
+}
+```
+
+```ts
+const MyComponent = () => {
+  const ids = ['item_1', 'item_2'];
+  const items = ids.map(store.data.use);
+  // items = [{ id: 'item_1', hello: 'World' }, { id: 'item_2', hello: 'Everybody' }]
+  // ...
+  // store.data.item_1 = newItem; // will update the items array
+}
+```
+
+Unfortunately you can't use `items` as a hook dependency since this array is initialised on every render. To fix that you can create `useMap` hook that accepts an object that's going to be mapped and its keys.
+
+```ts
+const useMap = (object: Use0 & Record<string, KnownAny>, ids: string[]) => {
+    for(const id of ids) object.use(id);
+    return useMemo(() => ids.map((id) => object[id]), ids);
+}
+
+const MyComponent = () => {
+  const ids = ['item_1', 'item_2'];
+  const items = useMap(store.data, ids);
+  // ...
+}
+```
+
 For a very small app you can define your entire application state using `Use0.of` method (also exported as a constant).
+
+
+--------
 
 ```ts
 // ./store.ts
