@@ -612,7 +612,7 @@ You still can define a nested object inside your public class.
 class UsersPublic extends Use0 {
   ids = [1, 2, 3]
   nested: {
-    foo: { bar: { baz: 'hello' }}
+    foo: { bar: { baz: 'hello' } }
   };
 }
 ```
@@ -632,13 +632,13 @@ For a nested sub-store follow the same pattern and call `init` method to provide
 
 ```ts
 // ./store/users/index.ts
-import profiles, { type Profiles } from './profiles';
+import profiles, { type ProfilesProtected } from './profiles';
 
 // class UsersPublic extends Use0 { ... }
 
 class UsersProtected extends UsersPublic {
   private store!: RootStore;
-  readonly profiles = profiles as Profiles;
+  readonly profiles = profiles as ProfilesProtected;
   readonly init: (store: RootStore) {
     this.store = store;
     this.profiles.init(store);
@@ -652,7 +652,7 @@ class ProfilesPublic extends Use0 {
   myProfileEmail = 'hello@example.com';
 }
 
-class Profiles extends ProfilesPublic {
+class ProfilesProtected extends ProfilesPublic {
   private store!: RootStore;
   readonly init = (store: RootStore) => {
     this.store = store;
@@ -662,7 +662,7 @@ class Profiles extends ProfilesPublic {
   }
 }
 
-const profiles = new Profiles();
+const profiles = new ProfilesProtected();
 
 export const { updateProfile } = profiles;
 
