@@ -295,8 +295,6 @@ export class RootStore extends Use0 {
   readonly companies = companies;
   constructor() {
     super();
-    // you can write a function that automates that:
-    // this.initStore(users, companies, ...rest);
     users.init(this);
     companies.init(this);
   }
@@ -768,7 +766,7 @@ class UserMethodsPartTwo extends UserMethodsPartOne {
   readonly anotherLargeMethod = () => { /* ... */ }
 }
 
-class Users extends UserMethodsPartTwo { /* ... */ }
+class UsersProtected extends UserMethodsPartTwo { /* ... */ }
 ```
 
 But it's too hard to manage the enheritance chain. Instead, move methods as individual functions to another file.
