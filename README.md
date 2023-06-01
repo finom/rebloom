@@ -974,13 +974,15 @@ const MyComponent = () => {
   const ids = ['item_1', 'item_2'];
   const items = useMap(store.data, ids);
   // ...
+
+  useEffect(() => { /* ... */ }, [items])
 }
 ```
 
-For a very small app you can define your entire application state using `Use0.of` method (also exported as a constant).
-
-
 --------
+
+
+For a very small app you can define your entire application state using `Use0.of` method (also exported as a constant).
 
 ```ts
 // ./store.ts
