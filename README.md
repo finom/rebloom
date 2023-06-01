@@ -539,23 +539,23 @@ export class UsersProtected extends UsersPublic { // inherit it from UsersPublic
   }
 }
 
-const users = new Users();
+const users = new UsersProtected();
 
 export const { loadUsers } = users;
 
 export default users as UsersPublic; // override
 ```
 
-Use the same pattern at the root store to make `RootStore['users']` and other sub-stores to have all "private" members available.
+Use the same pattern at the root store to make `RootStore['users']` and other sub-stores to have all "protected" members available.
 
 ```ts
 import Use0 from 'use-0';
-import users, { type Users } from './users';
-import companies, { type Companies } from './companies';
+import users, { type UsersProtected } from './users';
+import companies, { type CompaniesProtected } from './companies';
 
 export class RootStore extends Use0 {
-  readonly users = users as Users; // override back
-  readonly companies = companies as Companies;
+  readonly users = users as UsersProtected; // override back
+  readonly companies = companies as CompaniesProtected;
   constructor() {
     super();
     this.users.init(this);
