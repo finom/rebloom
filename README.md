@@ -856,7 +856,8 @@ const { loadUsers } = store.users; // no error
 If you import a method from `methods.ts` by mistake instead of importing it from the sub-store file, you wouldn't be able to call it, since it requires `this` context to bound.
 
 ```ts
-import users, { loadUsers } from './store/users/methods';
+import users from './store/users';
+import { loadUsers } from './store/users/methods'; // imported by mistake
 
 loadUsers(); // TS error because it needs to be invoked as loadUsers.call(users);
 ```
