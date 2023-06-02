@@ -430,7 +430,7 @@ console.log(store); // now it's OK
 To fix ESLint error about `_` symbol in the variable name you can modify the following rule:
 
 ```ts
-'@typescript-eslint/naming-convention': [2, { leadingUnderscore: true }]
+'@typescript-eslint/naming-convention': [2, { leadingUnderscore: 'allow' }]
 ```
 
 If you need some root-level properties you can define another sub-store caled `App` or `Settings`.
@@ -852,6 +852,24 @@ Type `RemoveThis` allows to fix a TypeScript error that appears when you assign 
 ```ts
 const { loadUsers } = store.users; // no error
 ```
+
+If you import a method from `methods.ts` by mistake instead of importing it from the sub-store file, you wouldn't be able to call it, since it requires `this` context to bound.
+
+```ts
+import users, { loadUsers } from './store/users/methods';
+
+loadUsers(); // TS error because it needs to be invoked as loadUsers.call(users);
+```
+
+But
+
+```ts
+import users, { loadUsers } from './store/users';
+
+loadUsers(); // This is OK
+```
+
+Alternatively you can play around with types and export `never` instead of a function from `methods.ts`. Or use `export default { method1, method2 }` instead of `export const` to make impossible to import methods individually. But those workarounds are up to you.
 
 ### Alternative syntax
 
