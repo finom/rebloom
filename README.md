@@ -620,7 +620,7 @@ And access it as expected.
 ```ts
 import users from './store/users';
 
-// works since "foo" property is public
+// works since "nested" property is public
 console.log(users.nested.foo.bar.baz);
 ```
 
