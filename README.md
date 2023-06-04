@@ -745,7 +745,7 @@ Your file structure is going to look like that:
 
 1. Using patterns above we restrict the code and provide only one way to import the store by component modules: `import publicData, { method1, method2 } from './store/foo/bar/baz` where default export is used for public properties and named export is used for actions. It doesn't make sense to provide full store access to other modules that aren't related to the store.
 2. Store class methods still have full access to the store and other-sub stores at their methods using privately available `this.store`.
-3. You get unlimited scaling using a few lines code and no additional concepts to learn.
+3. You get unlimited scaling using a few lines of code and no additional concepts to learn.
 
 ## Additional information
 
