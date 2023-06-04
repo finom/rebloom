@@ -241,7 +241,7 @@ export default class Users extends Use0 {
 }
 ```
 
-Destructure methods for better code before they was used in your component.
+Destructure methods for better code before they were used in your component.
 
 ```ts
 const MyComponent = () => {
