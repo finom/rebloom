@@ -518,7 +518,7 @@ type FunctionPropertyNames<T> = {
 export type OmitMethods<T> = Exclude<FunctionPropertyNames<T>, 'use'>;
 ```
 
-The type also preserves `use` method to be used at hooks.
+The type also preserves `use` method to be used at components.
 
 ### Advanced data protection
 
