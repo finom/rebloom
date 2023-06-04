@@ -621,7 +621,7 @@ And access it as expected.
 import users from './store/users';
 
 // works since "foo" property is public
-console.log(users.foo.bar.baz);
+console.log(users.nested.foo.bar.baz);
 ```
 
 ### Nested store
