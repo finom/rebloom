@@ -10,7 +10,7 @@ export default class Use0 {
     }
   }
 
-  readonly use = <KEY extends keyof this>(key: KEY) => useValue(this, key);
+  readonly use = <KEY extends null | undefined | keyof this>(key: KEY) => useValue(this, key);
 
   static readonly of = of;
 }
