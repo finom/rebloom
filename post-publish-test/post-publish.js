@@ -21,4 +21,4 @@ const {
 expect(typeof getUse === 'function').to.be(true);
 
 // return main dependencies back
-execSync('npm ci', { cwd: path.join(__dirname, '..') });
+execSync('npm --prefix .. ci --legacy-peer-deps', { cwd: __dirname });
