@@ -20,7 +20,7 @@
 
 > The simplest application state library ever
 
-**use-0** exports `getUse` function that turns any object into a use-able object whose properties are going to be listened by `use` property.
+**use-0** exports `getUse` function that turns any object into a use-able object whose properties are going to be listened by `use` hook.
 
 ```ts
 // appState.ts
@@ -62,7 +62,7 @@ const MyComponent = () => {
 export default MyComponent;
 ```
 
-A use-able object is a regular object and all its properties and methods are used in the traditional way. Properties need to maintain immutability to invoke the property accessor.
+A use-able object is a regular object and all its properties and methods are used in the traditional way. Properties need to maintain immutability to invoke the property accessor. `readonly` prefix protects properties to be reassigned.
 
 ```ts
 appState.count++;
@@ -71,39 +71,6 @@ appState.increment();
 ```
 
 ## Other ways to invoke
-
-### Static class
-
-```ts
-// appState.ts
-import { getUse } from 'use-0';
-
-export default class AppState {
-  // define "use"
-  static readonly use = getUse<AppState>();
-
-  // define other properties
-  static count = 0;
-  static ids: number[] = [];
-  
-  // define methods
-  static increment = () => this.count++;
-  static readonly decrement = () => this.count--;
-}
-```
-
-```ts
-// MyComponent.ts
-
-const MyComponent = () => {
-  const count = AppState.use('count');
-  const ids = AppState.use('ids');
-
-  return (
-    <div onClick={() => AppState.count++}>Clicks: {count}</div>
-  )
-}
-```
 
 ### Plain object
 
@@ -121,7 +88,38 @@ const appState: AppState = {
   count: 0,
   ids: [],
 }
+```
 
+### Static class
+
+```ts
+// appState.ts
+import { getUse } from 'use-0';
+
+export default class AppState {
+  // define "use"
+  static readonly use = getUse<typeof AppState>();
+
+  // define other properties
+  static count = 0;
+  static ids: number[] = [];
+  
+  // define methods
+  static readonly increment = () => this.count++;
+  static readonly decrement = () => this.count--;
+}
+```
+
+```ts
+// MyComponent.ts
+const MyComponent = () => {
+  const count = AppState.use('count');
+  const ids = AppState.use('ids');
+
+  return (
+    <div onClick={() => AppState.count++}>Clicks: {count}</div>
+  )
+}
 ```
 
 ## State structure
