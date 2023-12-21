@@ -1,5 +1,8 @@
-assets
+.assets
 src
 test
 post-publish-test
 .github
+.eslintrc.js
+tsconfig.json
+tsconfig.eslint.json
