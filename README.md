@@ -4,17 +4,18 @@
     <source width="350" media="(prefers-color-scheme: light)" srcset=".assets/use-0.svg">
     <img width="350" alt="vovk" src=".assets/use-0.svg">
   </picture>
-
-<br><br>
-<a href="https://badge.fury.io/js/use-0">
-    <img src="https://badge.fury.io/js/use-0.svg" alt="npm version" />
-</a>
-<a href="http://www.typescriptlang.org/">
-    <img src="https://img.shields.io/badge/%3C%2F%3E-TypeScript-%230074c1.svg" alt="TypeScript" />
-</a>
-<a href="https://github.com/finom/use-0/actions">
-    <img src="https://github.com/finom/use-0/actions/workflows/main.yml/badge.svg" alt="Build status" />
-</a>
+</p>
+<p align="center">
+  <br><br>
+  <a href="https://badge.fury.io/js/use-0">
+      <img src="https://badge.fury.io/js/use-0.svg" alt="npm version" />
+  </a>
+  <a href="http://www.typescriptlang.org/">
+      <img src="https://img.shields.io/badge/%3C%2F%3E-TypeScript-%230074c1.svg" alt="TypeScript" />
+  </a>
+  <a href="https://github.com/finom/use-0/actions">
+      <img src="https://github.com/finom/use-0/actions/workflows/main.yml/badge.svg" alt="Build status" />
+  </a>
 </p>
 
 > Type-safe React state library for scalable apps with zero setup and zero additional knowledge required. Here you'll find tiny documentation with very detailed examples on how use the library, how to use it with standard hooks such as `useEffect`, how to to protect private data and actions from being used by components, how to avoid direct access to root store and also how to structure your files for a large-scale app.
