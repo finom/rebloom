@@ -15,14 +15,10 @@ execSync('rm -rf ../node_modules', { cwd: __dirname });
 const expect = require('expect.js');
 
 const {
-  default: Use0, of,
+  getUse,
 } = require('use-0');
 
-for (const f of [of, Use0]) {
-  expect(typeof f === 'function').to.be(true);
-}
-
-expect(Use0.of).to.be(of);
+expect(typeof getUse === 'function').to.be(true);
 
 // return main dependencies back
 execSync('yarn', { cwd: path.join(__dirname, '..') });
