@@ -8,7 +8,7 @@
 const { execSync } = require('child_process');
 const path = require('path');
 
-execSync('rm -rf node_modules && yarn --no-lockfile', { cwd: __dirname });
+execSync('rm -rf node_modules && npm ci', { cwd: __dirname });
 // remove root dependencies to avoid usage of them
 execSync('rm -rf ../node_modules', { cwd: __dirname });
 
@@ -21,4 +21,4 @@ const {
 expect(typeof getUse === 'function').to.be(true);
 
 // return main dependencies back
-execSync('yarn', { cwd: path.join(__dirname, '..') });
+execSync('npm ci', { cwd: path.join(__dirname, '..') });
