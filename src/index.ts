@@ -1,16 +1,11 @@
 import { useValue } from 'use-change';
 
-// eslint-disable-next-line @typescript-eslint/no-use-before-define
-export const of = <DATA extends object>(data?: DATA) => new Use0(data) as Use0 & DATA;
+export type WithUse<T> = T & {
+  use: ReturnType<typeof getUse<WithUse<T>>>;
+};
 
-export default class Use0 {
-  constructor(data?: object) {
-    if (data) {
-      Object.assign(this, data);
-    }
-  }
-
-  readonly use = <KEY extends null | undefined | keyof this>(key: KEY) => useValue(this, key);
-
-  static readonly of = of;
+export function getUse<T>() {
+  return function use<KEY extends null | undefined | keyof T>(this: T, key: KEY) {
+    return useValue<T, KEY>(() => this, key);
+  };
 }

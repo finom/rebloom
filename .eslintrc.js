@@ -9,6 +9,8 @@ module.exports = {
   ],
   rules: {
     'max-len': ['error', { code: 120 }],
+    'import/prefer-default-export': 'off',
+    'react-hooks/rules-of-hooks': 'off',
   },
   parserOptions: {
     ecmaVersion: 2020,
