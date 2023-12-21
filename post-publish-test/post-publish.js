@@ -8,7 +8,7 @@
 const { execSync } = require('child_process');
 const path = require('path');
 
-execSync('rm -rf node_modules && npm ci', { cwd: __dirname });
+execSync('rm -rf node_modules && npm i --no-package-lock', { cwd: __dirname });
 // remove root dependencies to avoid usage of them
 execSync('rm -rf ../node_modules', { cwd: __dirname });
 
