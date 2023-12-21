@@ -20,7 +20,7 @@
 
 > The simplest application state library ever
 
-**use-0** exports `getUse` function that turns any object into a use-able object whose properties are going to be listened by `use` hook.
+**use-0** exports `getUse` function that turns any object into a use-able object whose properties are going to be listened by property `use` hook.
 
 ```ts
 // appState.ts
