@@ -76,7 +76,7 @@ appState.increment();
 
 ```ts
 // appState.ts
-import { WithUse, getUse } from 'use-0';
+import { type WithUse, getUse } from 'use-0';
 
 type AppState = WithUse<{
   count: number;
