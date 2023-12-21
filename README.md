@@ -1,5 +1,10 @@
 <p align="center">
-<img src="assets/logo.svg" width="300">
+  <picture>
+    <source width="350" media="(prefers-color-scheme: dark)" srcset=".assets/use-0-white.svg">
+    <source width="350" media="(prefers-color-scheme: light)" srcset=".assets/use-0.svg">
+    <img width="350" alt="vovk" src=".assets/use-0.svg">
+  </picture>
+
 <br><br>
 <a href="https://badge.fury.io/js/use-0">
     <img src="https://badge.fury.io/js/use-0.svg" alt="npm version" />
