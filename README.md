@@ -18,9 +18,7 @@
   </a>
 </p>
 
-> The simplest application state library ever
-
-**use-0** exports `getUse` function that turns any object into a use-able object whose properties are going to be listened by property `use` hook.
+**use-0** exports the `getUse` function that turns any object into a use-able object whose properties are listened to by the `use` property hook.
 
 ```ts
 // appState.ts
@@ -33,7 +31,7 @@ class AppState {
   // define other properties
   count = 0;
   ids: number[] = [];
-  
+
   // define methods
   readonly increment = () => this.count++;
   readonly decrement = () => this.count--;
@@ -50,7 +48,7 @@ export default appState;
 import appState from './appState';
 
 const MyComponent = () => {
-  // the component is re-rendered when count or ids are re-assigned
+  // the component is re-rendered when 'count' or 'ids' are reassigned
   const count = appState.use('count');
   const ids = appState.use('ids');
 
@@ -62,12 +60,14 @@ const MyComponent = () => {
 export default MyComponent;
 ```
 
-A use-able object is a regular object and all its properties and methods are used in the traditional way. Properties need to maintain immutability to invoke the property accessor. `readonly` prefix protects properties to be reassigned.
+A use-able object is a regular object, and all its properties and methods are used in the traditional way. Properties need to maintain immutability to invoke the [property accessor](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/defineProperty). The `readonly` prefix protects properties from being reassigned.
+
 
 ```ts
 appState.count++;
 appState.ids = [...store.users.ids, 4];
 appState.increment();
+appState.increment = () => {}; // error because of the "readonly" prefix
 ```
 
 ## Other ways to invoke
@@ -92,6 +92,9 @@ const appState: AppState = {
 
 ### Static class
 
+Use the same principle as with an instantiable class, but all class members are defined with the `static` prefix, and the class isn't instantiated but used directly as an object.
+
+
 ```ts
 // appState.ts
 import { getUse } from 'use-0';
@@ -112,6 +115,8 @@ export default class AppState {
 
 ```ts
 // MyComponent.ts
+import AppState from './appState';
+
 const MyComponent = () => {
   const count = AppState.use('count');
   const ids = AppState.use('ids');
@@ -120,11 +125,13 @@ const MyComponent = () => {
     <div onClick={() => AppState.count++}>Clicks: {count}</div>
   )
 }
+
+export default MyComponent;
 ```
 
-## State structure
+## State Structure
 
-It's recommended to split application state into files and then collect them into the centralised application state object. At the example below we create two classes that are instantiated in `AppState` class. They also implement constructor that accepts the `appState` as an argument and defines `#appState` property that can be used by other methods.
+It's recommended to split the application state into files and then collect them into a centralized application state object. In the example below, we create two classes that are instantiated in the AppState class. They also implement a constructor that accepts the appState as an argument and defines the #appState property, which can be used by other methods. This is just one of the many ways to build the app state; feel free to adapt it.
 
 ```ts
 // PostState.ts
@@ -136,7 +143,7 @@ class PostState {
   
   ids: number[] = [];
   
-  readonly loadPosts = async () => await fetch(/* ... */)
+  readonly loadPosts = async () => await fetch(/* ... */);
 
   readonly #appState: AppState;
 
@@ -156,7 +163,7 @@ class CommentState {
   
   ids: number[] = [];
   
-  readonly loadComments = async () => await fetch(/* ... */)
+  readonly loadComments = async () => await fetch(/* ... */);
 
   readonly #appState: AppState;
 
@@ -192,7 +199,8 @@ export type { AppState };
 export default appState;
 ```
 
-Components can import `appState` and access other use-able objects.
+Components can import appState and access other use-able objects as members of AppState.
+
 
 ```ts
 // MyComponent.ts
@@ -203,5 +211,7 @@ useEffect(() => {
   });
 })
 // ...
-
 ```
+
+I hope you'll find it useful in your next project!
+
