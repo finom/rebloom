@@ -7,15 +7,9 @@
 </p>
 <br>
 <p align="center">
-  <a href="https://badge.fury.io/js/use-0">
-      <img src="https://badge.fury.io/js/use-0.svg" alt="npm version" />
-  </a>
-  <a href="http://www.typescriptlang.org/">
-      <img src="https://img.shields.io/badge/%3C%2F%3E-TypeScript-%230074c1.svg" alt="TypeScript" />
-  </a>
-  <a href="https://github.com/finom/use-0/actions">
-      <img src="https://github.com/finom/use-0/actions/workflows/main.yml/badge.svg" alt="Build status" />
-  </a>
+  <a href="https://badge.fury.io/js/use-0"><img src="https://badge.fury.io/js/use-0.svg" alt="npm version" /></a>
+  <a href="http://www.typescriptlang.org/"><img src="https://img.shields.io/badge/%3C%2F%3E-TypeScript-%230074c1.svg" alt="TypeScript" /></a>
+  <a href="https://github.com/finom/use-0/actions"><img src="https://github.com/finom/use-0/actions/workflows/main.yml/badge.svg" alt="Build status" /></a>
 </p>
 
 **use-0** exports the `getUse` function that turns any object into a use-able object whose properties are listened to by the `use` property hook inside React components.
