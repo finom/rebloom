@@ -18,7 +18,7 @@
   </a>
 </p>
 
-**use-0** exports the `getUse` function that turns any object into a use-able object whose properties are listened to by the `use` property hook.
+**use-0** exports the `getUse` function that turns any object into a use-able object whose properties are listened to by the `use` property hook inside React components.
 
 ```ts
 // appState.ts
