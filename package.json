@@ -5,7 +5,7 @@
   "main": "dist/index.js",
   "scripts": {
     "test": "npm run unit && npm run lint && tsc --noemit",
-    "unit": "jasmine-ts --config=test/jasmine.json",
+    "unit": "ts-node test/index.ts",
     "build": "rm -r dist && tsc",
     "lint-pure": "eslint . --ext .ts,.tsx",
     "lint": "npm run lint-pure -- --fix",
@@ -14,7 +14,7 @@
     "minor": "npm t && npm version minor && npm run build && npm publish && git push && git push --tags",
     "BREAKING-major": "npm t && npm version major && npm run build && npm publish && git push && git push --tags",
     "toc": "./gh-md-toc --insert README.md && rm README.md.*",
-    "upgrade": "npx npm-check-updates -u -x jasmine && npm i --legacy-peer-deps"
+    "upgrade": "npx npm-check-updates -u && npm i --legacy-peer-deps"
   },
   "repository": {
     "type": "git",
@@ -38,29 +38,23 @@
   "homepage": "https://github.com/finom/use-0#readme",
   "devDependencies": {
     "@testing-library/react-hooks": "^8.0.1",
-    "@types/jasmine": "^5.1.4",
-    "@types/react": "^18.2.45",
-    "@typescript-eslint/eslint-plugin": "^6.15.0",
-    "@typescript-eslint/parser": "^6.15.0",
-    "eslint": "^8.56.0",
+    "@types/node": "^20.11.26",
+    "@types/react": "^18.2.65",
+    "@typescript-eslint/eslint-plugin": "^7.2.0",
+    "@typescript-eslint/parser": "^7.2.0",
+    "eslint": "^8.57.0",
     "eslint-config-airbnb": "^19.0.4",
-    "eslint-config-airbnb-typescript": "^17.1.0",
+    "eslint-config-airbnb-typescript": "^18.0.0",
     "eslint-plugin-import": "^2.29.1",
     "eslint-plugin-jsx-a11y": "^6.8.0",
-    "eslint-plugin-react": "^7.33.2",
+    "eslint-plugin-react": "^7.34.0",
     "eslint-plugin-react-hooks": "^4.6.0",
-    "jasmine": "^3.10.0",
-    "jasmine-spec-reporter": "^7.0.0",
-    "jasmine-ts": "^0.4.0",
     "react": "^18.2.0",
     "react-test-renderer": "^18.2.0",
     "ts-node": "^10.9.2",
-    "typescript": "^5.3.3"
+    "typescript": "^5.4.2"
   },
   "peerDependencies": {
     "react": "*"
-  },
-  "dependencies": {
-    "use-change": "^1.2.4"
   }
 }
