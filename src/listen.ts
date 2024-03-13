@@ -1,6 +1,5 @@
-import type { Handler, KnownAny } from './types';
-
-const changeMap = new WeakMap<KnownAny, Record<KnownAny, Handler<KnownAny>[]>>();
+import changeMap from './changeMap';
+import type { Handler } from './types';
 
 export default function listen<SLICE, KEY extends keyof SLICE>(
   givenObject: SLICE,
