@@ -121,4 +121,36 @@ describe('useValue', () => {
     assert.strictEqual(store.y, '3');
     assert.strictEqual(renderedTimes, 3);
   });
+
+  it('Supports symbols', () => {
+    const x = Symbol('x');
+    const y = Symbol('y');
+
+    class Store {
+      use = getUse<Store>();
+
+      [x] = 1;
+
+      [y] = '2';
+    }
+
+    const store = new Store();
+
+    let renderedTimes = 0;
+    const { result } = renderHook(() => {
+      renderedTimes += 1;
+
+      return store.use(x);
+    });
+
+    assert.strictEqual(result.current, 1);
+    assert.strictEqual(store[x], 1);
+    assert.strictEqual(renderedTimes, 1);
+
+    act(() => { store[x] = 2; });
+
+    assert.strictEqual(result.current, 2);
+    assert.strictEqual(store[x], 2);
+    assert.strictEqual(renderedTimes, 2);
+  });
 });
