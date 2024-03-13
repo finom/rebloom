@@ -2,10 +2,9 @@
 /* eslint-disable max-len */
 import { useEffect, useMemo, useState } from 'react';
 import listen from './listen';
-import type { SliceRecord } from './types';
 
 export type WithUse<T> = T & {
-  use: ReturnType<typeof getUse<WithUse<T>>>;
+  use: ReturnType<typeof getUse<T>>;
 };
 
 export { listen };
@@ -14,7 +13,7 @@ export function getUse<STORE>() {
   return function use<
     KEYS extends keyof STORE | null | undefined | Array<keyof STORE>,
   >(
-    this: SliceRecord<STORE>,
+    this: STORE,
     keyAsIs: KEYS,
   ): KEYS extends null | undefined
       ? undefined : KEYS extends keyof STORE
