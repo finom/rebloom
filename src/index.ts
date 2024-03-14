@@ -12,7 +12,7 @@ export function getUse<STORE>() {
     KEYS extends keyof STORE | null | undefined | Array<keyof STORE>,
   >(
     this: STORE,
-    keyAsIs: KEYS,
+    keysAsIs: KEYS,
   ): KEYS extends null | undefined
       ? undefined
       : KEYS extends keyof STORE
@@ -26,7 +26,7 @@ export function getUse<STORE>() {
               ? STORE[U][]
               : never
             : never {
-    const keys = useMemo(() => (keyAsIs instanceof Array ? keyAsIs : [keyAsIs]) as (keyof STORE)[], [keyAsIs]);
+    const keys = useMemo(() => (keysAsIs instanceof Array ? keysAsIs : [keysAsIs]) as (keyof STORE)[], [keysAsIs]);
     const [stateValue, setStateValue] = useState(() => keys.map((key) => (key ? this[key] : undefined)));
 
     useEffect(() => {
@@ -46,7 +46,7 @@ export function getUse<STORE>() {
       // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [keys.map(String).join(), stateValue]);
 
-    return (keyAsIs instanceof Array ? stateValue : stateValue[0]) as ReturnType<typeof use<KEYS>>;
+    return (keysAsIs instanceof Array ? stateValue : stateValue[0]) as ReturnType<typeof use<KEYS>>;
   };
 }
 
