@@ -50,5 +50,3 @@ export function getUse<STORE>() {
     }, [keys.map(String).join(), updatedTimes]) as ReturnType<typeof use<KEYS>>;
   };
 }
-
-export default getUse;
