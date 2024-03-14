@@ -28,6 +28,8 @@ export function getUse<STORE>() {
         setStateValue(() => keys.map((key) => (key ? this[key] : undefined)));
       };
 
+      handler();
+
       const unsubscribe = keys.filter(Boolean).map((key) => listen(this, key, handler));
 
       return () => {
