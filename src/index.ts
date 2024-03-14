@@ -1,13 +1,13 @@
 import { useEffect, useMemo, useState } from 'react';
 import listen from './listen';
 
-export type WithUse<T> = T & {
+export type WithUse<T extends object> = T & {
   use: ReturnType<typeof getUse<T>>;
 };
 
 export { listen };
 
-export function getUse<STORE>() {
+export function getUse<STORE extends object>() {
   return function use<
     KEYS extends keyof STORE | null | undefined | Array<keyof STORE>,
   >(
@@ -26,27 +26,30 @@ export function getUse<STORE>() {
               ? STORE[U][]
               : never
             : never {
-    const keys = useMemo(() => (keysAsIs instanceof Array ? keysAsIs : [keysAsIs]) as (keyof STORE)[], [keysAsIs]);
+    const keys = keysAsIs instanceof Array ? keysAsIs : [keysAsIs];
     const [updatedTimes, setUpdatedTimes] = useState(0);
+    const updateKey = keys.map(String).join();
 
     useEffect(() => {
       const handler = () => {
         setUpdatedTimes((t) => t + 1);
       };
 
-      const unsubscribe = keys.filter(Boolean).map((key) => listen(this, key, handler));
+      const unsubscribe = keys
+        .filter((key) => key !== null && key !== undefined)
+        .map((key) => listen(this, key as keyof STORE, handler));
 
       return () => {
         unsubscribe.forEach((u) => u());
       };
-      // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [keys.map(String).join()]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [updateKey]);
 
     return useMemo(() => {
-      const value = keys.map((key) => (key ? this[key] : undefined));
+      const value = keys.map((key) => (key !== null && key !== undefined ? this[key as keyof STORE] : undefined));
 
       return keysAsIs instanceof Array ? value : value[0];
-      // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [keys.map(String).join(), updatedTimes]) as ReturnType<typeof use<KEYS>>;
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [updateKey, updatedTimes]) as ReturnType<typeof use<KEYS>>;
   };
 }
