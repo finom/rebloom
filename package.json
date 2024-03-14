@@ -9,7 +9,7 @@
     "build": "rm -r dist && tsc",
     "lint-pure": "eslint . --ext .ts,.tsx",
     "lint": "npm run lint-pure -- --fix",
-    "postpublish": "node post-publish-test/post-publish.js",
+    "postpublish": "node test/post-publish.cjs",
     "patch": "npm t && npm version patch && npm run build && npm publish && git push && git push --tags",
     "minor": "npm t && npm version minor && npm run build && npm publish && git push && git push --tags",
     "BREAKING-major": "npm t && npm version major && npm run build && npm publish && git push && git push --tags",
@@ -39,7 +39,7 @@
   "devDependencies": {
     "@testing-library/react-hooks": "^8.0.1",
     "@types/node": "^20.11.27",
-    "@types/react": "^18.2.65",
+    "@types/react": "^18.2.66",
     "@typescript-eslint/eslint-plugin": "^7.2.0",
     "@typescript-eslint/parser": "^7.2.0",
     "eslint": "^8.57.0",
@@ -56,5 +56,8 @@
   },
   "peerDependencies": {
     "react": "*"
+  },
+  "dependencies": {
+    "use-0": "^1.2.3"
   }
 }
