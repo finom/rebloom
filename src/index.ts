@@ -33,7 +33,8 @@ export function getUse<STORE>() {
       return () => {
         unsubscribe.forEach((u) => u());
       };
-    }, [keys]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [keys.join()]);
 
     return (keyAsIs instanceof Array ? stateValue : stateValue[0]) as ReturnType<typeof use<KEYS>>;
   };
