@@ -28,7 +28,9 @@ export function getUse<STORE>() {
         setStateValue(() => keys.map((key) => (key ? this[key] : undefined)));
       };
 
-      handler();
+      if (stateValue.length !== keys.length || stateValue.some((v, i) => v !== this[keys[i]])) {
+        handler();
+      }
 
       const unsubscribe = keys.filter(Boolean).map((key) => listen(this, key, handler));
 
@@ -36,7 +38,7 @@ export function getUse<STORE>() {
         unsubscribe.forEach((u) => u());
       };
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [keys.map((k) => String(k)).join(',')]);
+    }, [keys.map((k) => String(k)).join(','), stateValue]);
 
     return (keyAsIs instanceof Array ? stateValue : stateValue[0]) as ReturnType<typeof use<KEYS>>;
   };
