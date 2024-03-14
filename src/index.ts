@@ -27,16 +27,12 @@ export function getUse<STORE>() {
               : never
             : never {
     const keys = useMemo(() => (keysAsIs instanceof Array ? keysAsIs : [keysAsIs]) as (keyof STORE)[], [keysAsIs]);
-    const [stateValue, setStateValue] = useState(() => keys.map((key) => (key ? this[key] : undefined)));
+    const [updatedTimes, setUpdatedTimes] = useState(0);
 
     useEffect(() => {
       const handler = () => {
-        setStateValue(() => keys.map((key) => (key ? this[key] : undefined)));
+        setUpdatedTimes((t) => t + 1);
       };
-
-      if (stateValue.length !== keys.length || stateValue.some((v, i) => v !== this[keys[i]])) {
-        handler();
-      }
 
       const unsubscribe = keys.filter(Boolean).map((key) => listen(this, key, handler));
 
@@ -44,9 +40,14 @@ export function getUse<STORE>() {
         unsubscribe.forEach((u) => u());
       };
       // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [keys.map(String).join(), stateValue]);
+    }, [keys.map(String).join()]);
 
-    return (keysAsIs instanceof Array ? stateValue : stateValue[0]) as ReturnType<typeof use<KEYS>>;
+    return useMemo(() => {
+      const value = keys.map((key) => (key ? this[key] : undefined));
+
+      return keysAsIs instanceof Array ? value : value[0];
+      // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [keys.map(String).join(), updatedTimes]) as ReturnType<typeof use<KEYS>>;
   };
 }
 
