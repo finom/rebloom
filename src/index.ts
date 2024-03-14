@@ -33,7 +33,7 @@ export function getUse<STORE>() {
       return () => {
         unsubscribe.forEach((u) => u());
       };
-    }, [stateValue, keys]);
+    }, [keys]);
 
     return (keyAsIs instanceof Array ? stateValue : stateValue[0]) as ReturnType<typeof use<KEYS>>;
   };
