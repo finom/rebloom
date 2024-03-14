@@ -1,5 +1,3 @@
-/* eslint-disable no-param-reassign */
-/* eslint-disable max-len */
 import { useEffect, useMemo, useState } from 'react';
 import listen from './listen';
 
@@ -16,11 +14,19 @@ export function getUse<STORE>() {
     this: STORE,
     keyAsIs: KEYS,
   ): KEYS extends null | undefined
-      ? undefined : KEYS extends keyof STORE
+      ? undefined
+      : KEYS extends keyof STORE
         ? STORE[KEYS]
-        : KEYS extends Array<infer U> ? (U extends keyof STORE ? STORE[U] : never)[] : never {
+        : KEYS extends ReadonlyArray<infer U>
+          ? U extends keyof STORE
+            ? { [K in keyof KEYS]: STORE[KEYS[K] & keyof STORE] }
+            : never
+          : KEYS extends Array<infer U>
+            ? U extends keyof STORE
+              ? STORE[U][]
+              : never
+            : never {
     const keys = useMemo(() => (keyAsIs instanceof Array ? keyAsIs : [keyAsIs]) as (keyof STORE)[], [keyAsIs]);
-
     const [stateValue, setStateValue] = useState(() => keys.map((key) => (key ? this[key] : undefined)));
 
     useEffect(() => {
@@ -37,8 +43,8 @@ export function getUse<STORE>() {
       return () => {
         unsubscribe.forEach((u) => u());
       };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [keys.map((k) => String(k)).join(','), stateValue]);
+      // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [keys.map(String).join(), stateValue]);
 
     return (keyAsIs instanceof Array ? stateValue : stateValue[0]) as ReturnType<typeof use<KEYS>>;
   };

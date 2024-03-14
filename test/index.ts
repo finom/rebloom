@@ -104,8 +104,42 @@ describe('useValue', () => {
       return store.use(['x', 'y']);
     });
 
-    // assert.deepStrictEqual is used for array equality
-    assert.deepStrictEqual(result.current, [1, '2']);
+    assert.deepStrictEqual(result.current satisfies (number | string)[], [1, '2']);
+    assert.strictEqual(store.x, 1);
+    assert.strictEqual(renderedTimes, 1);
+
+    act(() => { store.x = 2; });
+
+    assert.deepStrictEqual(result.current, [2, '2']);
+    assert.strictEqual(store.x, 2);
+    assert.strictEqual(renderedTimes, 2);
+
+    act(() => { store.y = '3'; });
+
+    assert.deepStrictEqual(result.current, [2, '3']);
+    assert.strictEqual(store.y, '3');
+    assert.strictEqual(renderedTimes, 3);
+  });
+
+  it('Works with readonly arrays', () => {
+    class Store {
+      use = getUse<Store>();
+
+      x = 1;
+
+      y = '2';
+    }
+
+    const store = new Store();
+
+    let renderedTimes = 0;
+    const { result } = renderHook(() => {
+      renderedTimes += 1;
+
+      return store.use(['x', 'y'] as const);
+    });
+
+    assert.deepStrictEqual(result.current satisfies [number, string], [1, '2']);
     assert.strictEqual(store.x, 1);
     assert.strictEqual(renderedTimes, 1);
 
