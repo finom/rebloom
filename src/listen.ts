@@ -1,12 +1,12 @@
 import changeMap from './changeMap';
 import type { Handler } from './types';
 
-export default function listen<SLICE, KEY extends keyof SLICE>(
-  givenObject: SLICE,
-  key: KEY,
-  handler: Handler<SLICE[KEY]>,
+export default function listen<TState, TKey extends keyof TState>(
+  givenObject: TState,
+  key: TKey,
+  handler: Handler<TState[TKey]>,
 ): () => void {
-  const all: Record<KEY, Handler<SLICE[KEY]>[]> = changeMap.get(givenObject) ?? {};
+  const all: Record<TKey, Handler<TState[TKey]>[]> = changeMap.get(givenObject) ?? {};
 
   if (!Object.getOwnPropertyDescriptor(givenObject, key)?.get) {
     let value = givenObject[key];
@@ -15,7 +15,7 @@ export default function listen<SLICE, KEY extends keyof SLICE>(
       enumerable: true,
       configurable: false,
       get: () => value,
-      set: (newValue: SLICE[KEY]) => {
+      set: (newValue: TState[TKey]) => {
         const prevValue = givenObject[key];
 
         if (prevValue !== newValue) {

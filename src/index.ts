@@ -1,3 +1,7 @@
+/* eslint-disable no-nested-ternary */
+/* eslint-disable @typescript-eslint/no-unsafe-return */
+/* eslint-disable no-param-reassign */
+/* eslint-disable max-len */
 import { useEffect, useMemo, useState } from 'react';
 import listen from './listen';
 
@@ -7,37 +11,26 @@ export type WithUse<T extends object> = T & {
 
 export { listen };
 
-export function getUse<STORE extends object>() {
-  return function use<
-    KEYS extends keyof STORE | null | undefined | Array<keyof STORE>,
-  >(
-    this: STORE,
-    keysAsIs: KEYS,
-  ): KEYS extends null | undefined
-      ? undefined
-      : KEYS extends keyof STORE
-        ? STORE[KEYS]
-        : KEYS extends ReadonlyArray<infer U>
-          ? U extends keyof STORE
-            ? { [K in keyof KEYS]: STORE[KEYS[K] & keyof STORE] }
-            : never
-          : KEYS extends Array<infer U>
-            ? U extends keyof STORE
-              ? STORE[U][]
-              : never
-            : never {
-    const keys = keysAsIs instanceof Array ? keysAsIs : [keysAsIs];
+type Value<TState, TKey> = TKey extends null | undefined ? undefined : TState[TKey & keyof TState];
+
+type Use<TState> = {
+  <TKey extends null | undefined | keyof TState>(this: TState, key: TKey): Value<TState, TKey>;
+  <TKeys extends readonly (null | undefined | keyof TState)[]>(this: TState, keys: readonly [...TKeys]): { [K in keyof TKeys]: Value<TState, TKeys[K]> };
+};
+
+export function getUse<TState>() {
+  const use = function use(this: TState, keys: null | undefined | keyof TState | readonly (null | undefined | keyof TState)[]) {
     const [updatedTimes, setUpdatedTimes] = useState(0);
-    const updateKey = keys.map(String).join();
+    const updateKey = (keys instanceof Array ? keys : [keys]).map(String).join();
 
     useEffect(() => {
       const handler = () => {
         setUpdatedTimes((t) => t + 1);
       };
 
-      const unsubscribe = keys
+      const unsubscribe = (keys instanceof Array ? keys : [keys])
         .filter((key) => key !== null && key !== undefined)
-        .map((key) => listen(this, key as keyof STORE, handler));
+        .map((key) => listen(this, key as keyof TState, handler));
 
       return () => {
         unsubscribe.forEach((u) => u());
@@ -45,11 +38,20 @@ export function getUse<STORE extends object>() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [updateKey]);
 
-    return useMemo(() => {
-      const value = keys.map((key) => (key !== null && key !== undefined ? this[key as keyof STORE] : undefined));
+    return useMemo(
+      () => {
+        if (keys instanceof Array) {
+          const value = keys.map((key) => (key !== null && key !== undefined ? this[key] : undefined));
+          return value;
+        }
 
-      return keysAsIs instanceof Array ? value : value[0];
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [updateKey, updatedTimes]) as ReturnType<typeof use<KEYS>>;
+        const value = keys !== null && keys !== undefined ? this[keys] : undefined;
+        return value;
+      },
+      // eslint-disable-next-line react-hooks/exhaustive-deps
+      [updateKey, updatedTimes],
+    );
   };
+
+  return use as Use<TState>;
 }
