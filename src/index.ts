@@ -19,7 +19,7 @@ type Use<TState> = {
 };
 
 export function getUse<TState>() {
-  const use = function use(this: TState, keys: null | undefined | keyof TState | readonly (null | undefined | keyof TState)[]) {
+  function use(this: TState, keys: null | undefined | keyof TState | readonly (null | undefined | keyof TState)[]) {
     const [updatedTimes, setUpdatedTimes] = useState(0);
     const updateKey = (keys instanceof Array ? keys : [keys]).map(String).join();
 
@@ -51,7 +51,7 @@ export function getUse<TState>() {
       // eslint-disable-next-line react-hooks/exhaustive-deps
       [updateKey, updatedTimes],
     );
-  };
+  }
 
   return use as Use<TState>;
 }
