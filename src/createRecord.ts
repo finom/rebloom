@@ -1,17 +1,17 @@
 import getUse from './getUse';
 import { extendedTimesSymbol } from './symbols';
 
-export default function createRecord<T>(init?: Partial<T>) {
+export default function createRecord<T extends object>(init?: Partial<T>) {
     type Symbols = { [extendedTimesSymbol]: number };
     type State = T & Symbols;
 
     type Lib = {
-      use: ReturnType<typeof getUse<State>>;
-      useRecordValues: () => State[keyof State][];
-      useRecord: () => State;
-      getRecordValues: () => State[keyof State][];
-      getRecord: () => State;
-      extend: (ext: Partial<T>) => State;
+      use: ReturnType<typeof getUse<T & Symbols>>;
+      useRecordValues: () => T[keyof T][];
+      useRecord: () => T;
+      getRecordValues: () => T[keyof T][];
+      getRecord: () => T;
+      extend: (ext: Partial<T>) => T;
     };
 
     type Rec = State & Lib;
@@ -29,7 +29,7 @@ export default function createRecord<T>(init?: Partial<T>) {
         return this.getRecord();
       },
       getRecordValues(this: Rec) {
-        return Object.values(this.getRecord());
+        return Object.values(this.getRecord()) as T[keyof T][];
       },
       getRecord(this: Rec) {
         return this;
