@@ -1,57 +1,8 @@
-/* eslint-disable no-nested-ternary */
-/* eslint-disable @typescript-eslint/no-unsafe-return */
-/* eslint-disable no-param-reassign */
-/* eslint-disable max-len */
-import { useEffect, useMemo, useState } from 'react';
+import getUse from './getUse';
 import listen from './listen';
+import createRecord from './createRecord';
+import { extendedTimesSymbol } from './symbols';
 
-export type WithUse<T extends object> = T & {
-  use: ReturnType<typeof getUse<T>>;
+export {
+  getUse, listen, createRecord, extendedTimesSymbol,
 };
-
-export { listen };
-
-type Value<TState, TKey> = TKey extends null | undefined ? undefined : TState[TKey & keyof TState];
-
-type Use<TState> = {
-  <TKey extends null | undefined | keyof TState>(this: TState, key: TKey): Value<TState, TKey>;
-  <TKeys extends readonly (null | undefined | keyof TState)[]>(this: TState, keys: readonly [...TKeys]): { [K in keyof TKeys]: Value<TState, TKeys[K]> };
-};
-
-export function getUse<TState>() {
-  function use(this: TState, keys: null | undefined | keyof TState | readonly (null | undefined | keyof TState)[]) {
-    const [updatedTimes, setUpdatedTimes] = useState(0);
-    const updateKey = (keys instanceof Array ? keys : [keys]).map(String).join();
-
-    useEffect(() => {
-      const handler = () => {
-        setUpdatedTimes((t) => t + 1);
-      };
-
-      const unsubscribe = (keys instanceof Array ? keys : [keys])
-        .filter((key) => key !== null && key !== undefined)
-        .map((key) => listen(this, key as keyof TState, handler));
-
-      return () => {
-        unsubscribe.forEach((u) => u());
-      };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [updateKey]);
-
-    return useMemo(
-      () => {
-        if (keys instanceof Array) {
-          const value = keys.map((key) => (key !== null && key !== undefined ? this[key] : undefined));
-          return value;
-        }
-
-        const value = keys !== null && keys !== undefined ? this[keys] : undefined;
-        return value;
-      },
-      // eslint-disable-next-line react-hooks/exhaustive-deps
-      [updateKey, updatedTimes],
-    );
-  }
-
-  return use as Use<TState>;
-}

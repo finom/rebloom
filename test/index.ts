@@ -3,160 +3,176 @@
 import { renderHook, act } from '@testing-library/react-hooks';
 import { it, describe } from 'node:test';
 import assert from 'node:assert';
-import { WithUse, getUse, listen } from '../src';
+import {
+  createRecord, getUse, listen,
+} from '../src';
 
 describe('getUse', () => {
   it('Extends class', () => {
-    class Store {
-      use = getUse<Store>();
+    class State {
+      use = getUse<State>();
 
       x = 1;
 
       y = '2';
     }
 
-    const store = new Store();
+    const state = new State();
 
     let renderedTimes = 0;
     const { result } = renderHook(() => {
       renderedTimes += 1;
 
-      return store.use('x');
+      return state.use('x');
     });
 
     assert.strictEqual(result.current, 1);
-    assert.strictEqual(store.x, 1);
+    assert.strictEqual(state.x, 1);
     assert.strictEqual(renderedTimes, 1);
 
-    act(() => { store.x = 2; });
+    act(() => { state.x = 2; });
 
     assert.strictEqual(result.current, 2);
-    assert.strictEqual(store.x, 2);
+    assert.strictEqual(state.x, 2);
     assert.strictEqual(renderedTimes, 2);
   });
 
   it('Extends static class', () => {
-    class Store {
-      static use = getUse<typeof Store>();
+    class State {
+      static use = getUse<typeof State>();
 
       static x = 1;
     }
 
-    const store = Store;
+    const state = State;
 
     let renderedTimes = 0;
     const { result } = renderHook(() => {
       renderedTimes += 1;
 
-      return store.use('x');
+      return state.use('x');
     });
 
     assert.strictEqual(result.current, 1);
-    assert.strictEqual(store.x, 1);
+    assert.strictEqual(state.x, 1);
     assert.strictEqual(renderedTimes, 1);
 
-    act(() => { store.x = 2; });
+    act(() => { state.x = 2; });
 
     assert.strictEqual(result.current, 2);
-    assert.strictEqual(store.x, 2);
+    assert.strictEqual(state.x, 2);
     assert.strictEqual(renderedTimes, 2);
   });
 
   it('Extends object', () => {
-    const store: WithUse<{ x: number }> = {
-      use: getUse(),
+    const use = getUse<typeof state>();
+
+    const state = {
+      get use() {
+        return use;
+      },
       x: 1,
     };
+
+    Object.defineProperty(state, 'use', { enumerable: false });
+
+    /* let data = { x: 1 };
+
+    let state = {
+      ...data,
+      use: getUse<typeof data>(),
+    }
+    */
 
     let renderedTimes = 0;
     const { result } = renderHook(() => {
       renderedTimes += 1;
 
-      return store.use('x');
+      return state.use('x');
     });
 
     assert.strictEqual(result.current, 1);
-    assert.strictEqual(store.x, 1);
+    assert.strictEqual(state.x, 1);
     assert.strictEqual(renderedTimes, 1);
 
-    act(() => { store.x = 2; });
+    act(() => { state.x = 2; });
 
     assert.strictEqual(result.current, 2);
-    assert.strictEqual(store.x, 2);
+    assert.strictEqual(state.x, 2);
     assert.strictEqual(renderedTimes, 2);
   });
 
   it('Works with readonly arrays', () => {
-    class Store {
-      use = getUse<Store>();
+    class State {
+      use = getUse<State>();
 
       x = 1;
 
       y = '2';
     }
 
-    const store = new Store();
+    const state = new State();
 
     let renderedTimes = 0;
     const { result } = renderHook(() => {
       renderedTimes += 1;
 
-      return store.use(['x', 'y']);
+      return state.use(['x', 'y']);
     });
 
     assert.deepStrictEqual(result.current satisfies [number, string], [1, '2']);
-    assert.strictEqual(store.x, 1);
+    assert.strictEqual(state.x, 1);
     assert.strictEqual(renderedTimes, 1);
 
-    act(() => { store.x = 2; });
+    act(() => { state.x = 2; });
 
     assert.deepStrictEqual(result.current, [2, '2']);
-    assert.strictEqual(store.x, 2);
+    assert.strictEqual(state.x, 2);
     assert.strictEqual(renderedTimes, 2);
 
-    act(() => { store.y = '3'; });
+    act(() => { state.y = '3'; });
 
     assert.deepStrictEqual(result.current, [2, '3']);
-    assert.strictEqual(store.y, '3');
+    assert.strictEqual(state.y, '3');
     assert.strictEqual(renderedTimes, 3);
   });
 
   it('Works with regular arrays', () => {
-    class Store {
-      use = getUse<Store>();
+    class State {
+      use = getUse<State>();
 
       x = 1;
 
       y = '2';
     }
 
-    const store = new Store();
+    const state = new State();
 
     let renderedTimes = 0;
     const { result } = renderHook(() => {
       renderedTimes += 1;
 
-      const keys = Array<keyof Pick<Store, 'x' | 'y'>>();
+      const keys = Array<keyof Pick<State, 'x' | 'y'>>();
       keys.push('x');
       keys.push('y');
 
-      return store.use(keys);
+      return state.use(keys);
     });
 
     assert.deepStrictEqual(result.current satisfies (string | number)[], [1, '2']);
-    assert.strictEqual(store.x, 1);
+    assert.strictEqual(state.x, 1);
     assert.strictEqual(renderedTimes, 1);
 
-    act(() => { store.x = 2; });
+    act(() => { state.x = 2; });
 
     assert.deepStrictEqual(result.current, [2, '2']);
-    assert.strictEqual(store.x, 2);
+    assert.strictEqual(state.x, 2);
     assert.strictEqual(renderedTimes, 2);
 
-    act(() => { store.y = '3'; });
+    act(() => { state.y = '3'; });
 
     assert.deepStrictEqual(result.current, [2, '3']);
-    assert.strictEqual(store.y, '3');
+    assert.strictEqual(state.y, '3');
     assert.strictEqual(renderedTimes, 3);
   });
 
@@ -164,59 +180,65 @@ describe('getUse', () => {
     const x = Symbol('x');
     const y = Symbol('y');
 
-    class Store {
-      use = getUse<Store>();
+    class State {
+      use = getUse<State>();
 
       [x] = 1;
 
       [y] = '2';
     }
 
-    const store = new Store();
+    const state = new State();
 
     let renderedTimes = 0;
     const { result } = renderHook(() => {
       renderedTimes += 1;
 
-      return store.use(x);
+      return state.use(x);
     });
 
     assert.strictEqual(result.current, 1);
-    assert.strictEqual(store[x], 1);
+    assert.strictEqual(state[x], 1);
     assert.strictEqual(renderedTimes, 1);
 
-    act(() => { store[x] = 2; });
+    act(() => { state[x] = 2; });
 
     assert.strictEqual(result.current, 2);
-    assert.strictEqual(store[x], 2);
+    assert.strictEqual(state[x], 2);
     assert.strictEqual(renderedTimes, 2);
   });
 });
 
 describe('listen', () => {
   it('listen and returned unlisten', () => {
-    const store = { x: 1 };
+    const state = { x: 1 };
     let prev: number;
     let triggerTimes = 0;
 
-    const unlisten = listen(store, 'x', (x, previous) => {
+    const unlisten = listen(state, 'x', (x, previous) => {
       triggerTimes += 1;
-      assert.strictEqual(x satisfies number, store.x);
+      assert.strictEqual(x satisfies number, state.x);
       assert.strictEqual(previous satisfies number, prev);
     });
 
-    prev = store.x;
-    store.x = 2;
+    prev = state.x;
+    state.x = 2;
     assert.strictEqual(triggerTimes, 1);
-    prev = store.x;
-    store.x = 3;
+    prev = state.x;
+    state.x = 3;
     assert.strictEqual(triggerTimes, 2);
     unlisten();
-    prev = store.x;
-    store.x = 4;
+    prev = state.x;
+    state.x = 4;
     assert.strictEqual(triggerTimes, 2);
-    prev = store.x;
-    store.x = 5;
+    prev = state.x;
+    state.x = 5;
     assert.strictEqual(triggerTimes, 2);
+  });
+});
+
+describe('createRecord', () => {
+  it.skip('Creates record with extended properties', () => {
+    createRecord();
   });
 });

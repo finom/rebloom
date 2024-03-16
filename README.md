@@ -59,7 +59,7 @@ A use-able object is a regular object, and all its properties and methods are us
 
 ```ts
 appState.count++;
-appState.ids = [...store.users.ids, 4];
+appState.ids = [...state.users.ids, 4];
 appState.increment();
 appState.increment = () => {}; // error because of the "readonly" prefix
 ```
@@ -209,3 +209,10 @@ useEffect(() => {
 
 I hope you'll find it useful in your next project!
 
+
+<!--
+naming ideas:
+- redef
+- rebloom!
+- leleka
+-->

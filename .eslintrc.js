@@ -11,6 +11,8 @@ module.exports = {
     'max-len': ['error', { code: 120 }],
     'import/prefer-default-export': 'off',
     'react-hooks/rules-of-hooks': 'off',
+    'no-restricted-syntax': 'off',
+    'max-len': 'off',
   },
   parserOptions: {
     ecmaVersion: 2020,
