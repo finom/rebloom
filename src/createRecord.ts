@@ -2,9 +2,10 @@ import getUse from './getUse';
 import { extendedTimesSymbol } from './symbols';
 
 export default function createRecord<T>(init?: Partial<T>) {
-    type State = T & { [extendedTimesSymbol]: number };
+    type Symbols = { [extendedTimesSymbol]: number };
+    type State = T & Symbols;
 
-    type Rec = State & {
+    type Lib = {
       use: ReturnType<typeof getUse<State>>;
       useRecordValues: () => State[keyof State][];
       useRecord: () => State;
@@ -12,6 +13,8 @@ export default function createRecord<T>(init?: Partial<T>) {
       getRecord: () => State;
       extend: (ext: Partial<T>) => State;
     };
+
+    type Rec = State & Lib;
 
     const record: Rec = {
       ...init as T,
@@ -32,24 +35,33 @@ export default function createRecord<T>(init?: Partial<T>) {
         return this;
       },
       extend(this: Rec, ext: Partial<T>) {
+        let isChanged = false;
         for (const [key, value] of Object.entries(ext)) {
-          this[key as keyof Rec] = value as Rec[keyof Rec];
+          if (this[key as keyof Rec] !== value) {
+            isChanged = true;
+            this[key as keyof Rec] = value as Rec[keyof Rec];
+          }
         }
-        this[extendedTimesSymbol] += 1;
+        if (isChanged) {
+          this[extendedTimesSymbol] += 1;
+        }
         return this;
       },
     };
 
+    record[extendedTimesSymbol] = 0;
+
     const descriptor: PropertyDescriptor = { enumerable: false, writable: false, configurable: false };
 
     Object.defineProperties(record, {
+      [extendedTimesSymbol]: { enumerable: false, writable: true, configurable: true },
       use: descriptor,
-      useAllAsArray: descriptor,
-      useAll: descriptor,
-      getAllAsArray: descriptor,
-      getAll: descriptor,
+      useRecordValues: descriptor,
+      useRecord: descriptor,
+      getRecordValues: descriptor,
+      getRecord: descriptor,
       extend: descriptor,
-    });
+    } satisfies Record<keyof Lib & Symbols, PropertyDescriptor>);
 
     return record;
 }

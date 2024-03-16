@@ -7,12 +7,13 @@ export default function listen<TState, TKey extends keyof TState>(
   handler: Handler<TState[TKey]>,
 ): () => void {
   const all: Record<TKey, Handler<TState[TKey]>[]> = changeMap.get(givenObject) ?? {};
+  const existingDescriptor = Object.getOwnPropertyDescriptor(givenObject, key);
 
-  if (!Object.getOwnPropertyDescriptor(givenObject, key)?.get) {
+  if (!existingDescriptor?.get) {
     let value = givenObject[key];
 
     Object.defineProperty(givenObject, key, {
-      enumerable: true,
+      enumerable: existingDescriptor?.enumerable ?? true,
       configurable: false,
       get: () => value,
       set: (newValue: TState[TKey]) => {

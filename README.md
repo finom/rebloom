@@ -1,22 +1,17 @@
-<p align="center">
-  <picture>
-    <source width="350" media="(prefers-color-scheme: dark)" srcset=".assets/use-0-white.svg">
-    <source width="350" media="(prefers-color-scheme: light)" srcset=".assets/use-0.svg">
-    <img width="350" alt="vovk" src=".assets/use-0.svg">
-  </picture>
-</p>
+# rebloom (WIP)
+
 <br>
 <p align="center">
-  <a href="https://badge.fury.io/js/use-0"><img src="https://badge.fury.io/js/use-0.svg" alt="npm version" /></a>
+  <a href="https://badge.fury.io/js/rebloom"><img src="https://badge.fury.io/js/rebloom.svg" alt="npm version" /></a>
   <a href="http://www.typescriptlang.org/"><img src="https://img.shields.io/badge/%3C%2F%3E-TypeScript-%230074c1.svg" alt="TypeScript" /></a>
-  <a href="https://github.com/finom/use-0/actions"><img src="https://github.com/finom/use-0/actions/workflows/main.yml/badge.svg" alt="Build status" /></a>
+  <a href="https://github.com/finom/rebloom/actions"><img src="https://github.com/finom/rebloom/actions/workflows/main.yml/badge.svg" alt="Build status" /></a>
 </p>
 
-**use-0** exports the `getUse` function that turns any object into a use-able object whose properties are listened to by the `use` property hook inside React components.
+**rebloom** exports the `getUse` function that turns any object into a use-able object whose properties are listened to by the `use` property hook inside React components.
 
 ```ts
 // appState.ts
-import { getUse } from 'use-0';
+import { getUse } from 'rebloom';
 
 class AppState {
   // define "use"
@@ -70,7 +65,7 @@ appState.increment = () => {}; // error because of the "readonly" prefix
 
 ```ts
 // appState.ts
-import { type WithUse, getUse } from 'use-0';
+import { type WithUse, getUse } from 'rebloom';
 
 type AppState = WithUse<{
   count: number;
@@ -91,7 +86,7 @@ Use the same principle as with an instantiable class, but all class members are 
 
 ```ts
 // appState.ts
-import { getUse } from 'use-0';
+import { getUse } from 'rebloom';
 
 export default class AppState {
   // define "use"
@@ -129,7 +124,7 @@ It's recommended to split the application state into files and then collect them
 
 ```ts
 // PostState.ts
-import { getUse } from 'use-0';
+import { getUse } from 'rebloom';
 import type { AppState } from './appState';
 
 class PostState {
@@ -149,7 +144,7 @@ class PostState {
 
 ```ts
 // CommentState.ts
-import { getUse } from 'use-0';
+import { getUse } from 'rebloom';
 import type { AppState } from './appState';
 
 class CommentState {
@@ -169,7 +164,7 @@ class CommentState {
 
 ```ts
 // appState.ts
-import { getUse } from 'use-0';
+import { getUse } from 'rebloom';
 import PostState from './PostState';
 import CommentState from './CommentState';
 
