@@ -21,7 +21,7 @@ describe('getUse', () => {
     const { result } = renderHook(() => {
       renderedTimes += 1;
 
-      return state.use('x');
+      return state.use('x' as 'x' | null);
     });
 
     assert.strictEqual(result.current, 1);
@@ -118,10 +118,10 @@ describe('getUse', () => {
     const { result } = renderHook(() => {
       renderedTimes += 1;
 
-      return state.use(['x', 'y']);
+      return state.use(['x', 'y'] as ['x', 'y'] | null);
     });
 
-    assert.deepStrictEqual(result.current satisfies [number, string], [1, '2']);
+    assert.deepStrictEqual(result.current satisfies [number, string] | undefined, [1, '2']);
     assert.strictEqual(state.x, 1);
     assert.strictEqual(renderedTimes, 1);
 
