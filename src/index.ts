@@ -1,8 +1,8 @@
 import getUse from './getUse';
-import listen from './listen';
+import getListen from './getListen';
 import createRecord from './createRecord';
 import { extendedTimesSymbol } from './symbols';
 
 export {
-  getUse, listen, createRecord, extendedTimesSymbol,
+  getUse, getListen, createRecord, extendedTimesSymbol,
 };

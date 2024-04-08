@@ -1,7 +1,7 @@
 import changeMap from './changeMap';
 import type { Handler } from './types';
 
-export default function listen<TState, TKey extends keyof TState>(
+export default function listenOne<TState, TKey extends keyof TState>(
   givenObject: TState,
   key: TKey,
   handler: Handler<TState[TKey]>,

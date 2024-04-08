@@ -70,7 +70,18 @@ describe('getUse', () => {
         return use;
       },
       x: 1,
+      y: '2',
     };
+
+    /*
+    const state = {
+      get use() {
+        return getUse(state);
+      },
+      x: 1,
+      y: '2',
+    };
+    */
 
     Object.defineProperty(state, 'use', { enumerable: false });
 
@@ -81,7 +92,7 @@ describe('getUse', () => {
       return state.use('x');
     });
 
-    assert.strictEqual(result.current, 1);
+    assert.strictEqual(result.current satisfies number, 1);
     assert.strictEqual(state.x, 1);
     assert.strictEqual(renderedTimes, 1);
 

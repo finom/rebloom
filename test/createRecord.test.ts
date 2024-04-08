@@ -30,7 +30,7 @@ describe('createRecord', () => {
     assert.strictEqual(renderedTimes, 2);
   });
 
-  it('useRecord & getRecord', () => {
+  it('useAll', async () => {
     const state = createRecord({
       x: 1,
       y: '2',
@@ -40,37 +40,63 @@ describe('createRecord', () => {
     const { result } = renderHook(() => {
       renderedTimes += 1;
 
-      return state.useRecord();
+      return state.useAll();
     });
 
-    act(() => { state.extend({ x: 2 }); });
+    act(() => {
+      state.x = 2;
+      state.y = '3';
+    });
+
+    await new Promise((resolve) => { setImmediate(resolve); });
 
     assert.deepStrictEqual(result.current satisfies {
       x: number,
       y: string,
-    }, { x: 2, y: '2' });
+    }, { x: 2, y: '3' });
     assert.strictEqual(state[extendedTimesSymbol], 1);
     assert.strictEqual(state.x, 2);
     assert.strictEqual(renderedTimes, 2);
 
-    act(() => { state.extend({ x: 2 }); });
+    act(() => {
+      state.x = 2;
+      state.y = '3';
+    });
 
-    assert.deepStrictEqual(result.current, { x: 2, y: '2' });
+    await new Promise((resolve) => { setImmediate(resolve); });
+
+    assert.deepStrictEqual(result.current, { x: 2, y: '3' });
     assert.strictEqual(state[extendedTimesSymbol], 1);
     assert.strictEqual(state.x, 2);
     assert.strictEqual(renderedTimes, 2);
 
-    act(() => { state.extend({ x: 3 }); });
+    act(() => {
+      state.x = 3;
+      state.y = '4';
+    });
 
-    assert.deepStrictEqual(result.current, { x: 3, y: '2' });
+    await new Promise((resolve) => { setImmediate(resolve); });
+
+    assert.deepStrictEqual(result.current, { x: 3, y: '4' });
     assert.strictEqual(state[extendedTimesSymbol], 2);
     assert.strictEqual(state.x, 3);
     assert.strictEqual(renderedTimes, 3);
 
-    assert.deepStrictEqual(state.getRecord(), { x: 3, y: '2' });
+    assert.deepStrictEqual(state, { x: 3, y: '4' });
+
+    act(() => {
+      Object.assign(state, { x: 4, y: '5' });
+    });
+
+    await new Promise((resolve) => { setImmediate(resolve); });
+
+    assert.deepStrictEqual(result.current, { x: 4, y: '5' });
+    assert.strictEqual(state[extendedTimesSymbol], 3);
+    assert.strictEqual(state.x, 4);
+    assert.strictEqual(renderedTimes, 4);
   });
 
-  it('useRecordValues & getRecordValues', () => {
+  it('useAll with function', async () => {
     const state = createRecord({
       x: 1,
       y: '2',
@@ -80,30 +106,60 @@ describe('createRecord', () => {
     const { result } = renderHook(() => {
       renderedTimes += 1;
 
-      return state.useRecordValues();
+      return state.useAll((d) => ({ ...d, foo: 'bar' }));
     });
 
-    act(() => { state.extend({ x: 2 }); });
+    act(() => {
+      state.x = 2;
+      state.y = '3';
+    });
 
-    assert.deepStrictEqual(result.current satisfies (string | number)[], [2, '2']);
+    await new Promise((resolve) => { setImmediate(resolve); });
+
+    assert.deepStrictEqual(result.current satisfies {
+      x: number,
+      y: string,
+      foo: string,
+    }, { x: 2, y: '3', foo: 'bar' });
     assert.strictEqual(state[extendedTimesSymbol], 1);
     assert.strictEqual(state.x, 2);
     assert.strictEqual(renderedTimes, 2);
 
-    act(() => { state.extend({ x: 2 }); });
+    act(() => {
+      state.x = 2;
+      state.y = '3';
+    });
 
-    assert.deepStrictEqual(result.current, [2, '2']);
+    await new Promise((resolve) => { setImmediate(resolve); });
+
+    assert.deepStrictEqual(result.current, { x: 2, y: '3', foo: 'bar' });
     assert.strictEqual(state[extendedTimesSymbol], 1);
     assert.strictEqual(state.x, 2);
     assert.strictEqual(renderedTimes, 2);
 
-    act(() => { state.extend({ x: 3 }); });
+    act(() => {
+      state.x = 3;
+      state.y = '4';
+    });
 
-    assert.deepStrictEqual(result.current, [3, '2']);
+    await new Promise((resolve) => { setImmediate(resolve); });
+
+    assert.deepStrictEqual(result.current, { x: 3, y: '4', foo: 'bar' });
     assert.strictEqual(state[extendedTimesSymbol], 2);
     assert.strictEqual(state.x, 3);
     assert.strictEqual(renderedTimes, 3);
 
-    assert.deepStrictEqual(state.getRecordValues(), [3, '2']);
+    assert.deepStrictEqual(state, { x: 3, y: '4' });
+
+    act(() => {
+      Object.assign(state, { x: 4, y: '5' });
+    });
+
+    await new Promise((resolve) => { setImmediate(resolve); });
+
+    assert.deepStrictEqual(result.current, { x: 4, y: '5', foo: 'bar' });
+    assert.strictEqual(state[extendedTimesSymbol], 3);
+    assert.strictEqual(state.x, 4);
+    assert.strictEqual(renderedTimes, 4);
   });
 });
