@@ -2,10 +2,13 @@ import { useEffect, useMemo, useState } from 'react';
 import listenOne from './listenOne';
 
 export default function getUse<TState>() {
-  // function use <TKey extends readonly (keyof TState)[]>(this: TState, keys: TKey): { [K in keyof TKey]: TState[TKey[K] & keyof TState] };
+  function use <TKey extends readonly (keyof TState)[]>(this: TState, keys: [...TKey]): { [K in keyof TKey]: TState[TKey[K] & keyof TState] };
   function use <TKey extends null | undefined>(this: TState, key: TKey): undefined;
   function use <TKey extends keyof TState>(this: TState, key: TKey): TState[TKey & keyof TState];
-  function use <TKeys extends readonly (keyof TState)[]>(this: TState, keys: readonly [...TKeys]): { [K in keyof TKeys]: TState[TKeys[K] & keyof TState] };
+  // function use <TKeys extends readonly (keyof TState)[]>(this: TState, keys: readonly [...TKeys]): { [K in keyof TKeys]: TState[TKeys[K] & keyof TState] };
+  /* function use <TKey extends null | undefined | keyof TState | readonly (keyof TState)[]>(this: TState, key: TKey): TKey extends null | undefined ? undefined
+    : TKey extends readonly [...(keyof TState)[]] ? { [K in keyof TKey]: TState[TKey[K] & keyof TState] }
+    : TState[TKey & keyof TState]; */
   function use(this: TState, keys: null | undefined | keyof TState | readonly (keyof TState)[]) {
     const [updatedTimes, setUpdatedTimes] = useState(0);
     const updateKey = (keys instanceof Array ? keys : [keys]).map(String).join();

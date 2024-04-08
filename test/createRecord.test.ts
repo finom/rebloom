@@ -162,4 +162,10 @@ describe('createRecord', () => {
     assert.strictEqual(state.x, 4);
     assert.strictEqual(renderedTimes, 4);
   });
+
+  it.skip('listen', async () => {});
+
+  it.skip('listenAll', async () => {});
+
+  it.skip('toJSON', async () => {});
 });
