@@ -51,7 +51,7 @@ export default function createRecord<T extends object>(init?: T) {
 
   // xx.data.useAll((d) => useMemo(() => Object.keys(d), [d])) ???
 
-  let immediate: NodeJS.Immediate | null = null;
+  let immediate: NodeJS.Timeout | null = null;
 
   target.use = target.use.bind(target) as ReturnType<typeof getUse<T & Symbols>>;
   target.useAll = target.useAll.bind(target);
@@ -76,11 +76,11 @@ export default function createRecord<T extends object>(init?: T) {
         keysChanged.push(prop as keyof T);
 
         if (!immediate) {
-          immediate = setImmediate(() => {
+          immediate = setTimeout(() => {
             immediate = null;
             target[extendedTimesSymbol] += 1;
             keysChanged = [];
-          });
+          }, 0);
         }
       }
 

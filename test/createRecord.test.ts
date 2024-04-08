@@ -48,7 +48,7 @@ describe('createRecord', () => {
       state.y = '3';
     });
 
-    await new Promise((resolve) => { setImmediate(resolve); });
+    await new Promise((resolve) => { setTimeout(resolve, 0); });
 
     assert.deepStrictEqual(result.current satisfies {
       x: number,
@@ -63,7 +63,7 @@ describe('createRecord', () => {
       state.y = '3';
     });
 
-    await new Promise((resolve) => { setImmediate(resolve); });
+    await new Promise((resolve) => { setTimeout(resolve, 0); });
 
     assert.deepStrictEqual(result.current, { x: 2, y: '3' });
     assert.strictEqual(state[extendedTimesSymbol], 1);
@@ -75,7 +75,7 @@ describe('createRecord', () => {
       state.y = '4';
     });
 
-    await new Promise((resolve) => { setImmediate(resolve); });
+    await new Promise((resolve) => { setTimeout(resolve, 0); });
 
     assert.deepStrictEqual(result.current, { x: 3, y: '4' });
     assert.strictEqual(state[extendedTimesSymbol], 2);
@@ -88,7 +88,7 @@ describe('createRecord', () => {
       Object.assign(state, { x: 4, y: '5' });
     });
 
-    await new Promise((resolve) => { setImmediate(resolve); });
+    await new Promise((resolve) => { setTimeout(resolve, 0); });
 
     assert.deepStrictEqual(result.current, { x: 4, y: '5' });
     assert.strictEqual(state[extendedTimesSymbol], 3);
@@ -114,7 +114,7 @@ describe('createRecord', () => {
       state.y = '3';
     });
 
-    await new Promise((resolve) => { setImmediate(resolve); });
+    await new Promise((resolve) => { setTimeout(resolve, 0); });
 
     assert.deepStrictEqual(result.current satisfies {
       x: number,
@@ -130,7 +130,7 @@ describe('createRecord', () => {
       state.y = '3';
     });
 
-    await new Promise((resolve) => { setImmediate(resolve); });
+    await new Promise((resolve) => { setTimeout(resolve, 0); });
 
     assert.deepStrictEqual(result.current, { x: 2, y: '3', foo: 'bar' });
     assert.strictEqual(state[extendedTimesSymbol], 1);
@@ -142,7 +142,7 @@ describe('createRecord', () => {
       state.y = '4';
     });
 
-    await new Promise((resolve) => { setImmediate(resolve); });
+    await new Promise((resolve) => { setTimeout(resolve, 0); });
 
     assert.deepStrictEqual(result.current, { x: 3, y: '4', foo: 'bar' });
     assert.strictEqual(state[extendedTimesSymbol], 2);
@@ -155,7 +155,7 @@ describe('createRecord', () => {
       Object.assign(state, { x: 4, y: '5' });
     });
 
-    await new Promise((resolve) => { setImmediate(resolve); });
+    await new Promise((resolve) => { setTimeout(resolve, 0); });
 
     assert.deepStrictEqual(result.current, { x: 4, y: '5', foo: 'bar' });
     assert.strictEqual(state[extendedTimesSymbol], 3);
