@@ -2,8 +2,6 @@ import { useEffect, useState } from 'react';
 import listenOne from './listenOne';
 import { KnownAny } from './types';
 
-type KeyExtends<TState> = null | undefined | keyof TState | readonly (keyof TState)[];
-
 // type UseFKey<TState, TKey extends KeyExtends<TState>> = TKey extends null | undefined | keyof TState ? TKey : keyof TState;
 
 // TODO: Add transform arg
@@ -20,22 +18,22 @@ export default function getUse<TState>() {
     : TState[TKey & keyof TState];
   function use <TKey extends KeyExtends<TState>, R>(this: TState, key: TKey, f: (val: UseResult<TState, TKey>, key: TKey, prev: TState) => R): R; */
   function use <TKey extends null | undefined>(this: TState, key: TKey): undefined;
-  function use <TKey extends null | undefined, F extends (val: undefined, key: TKey, prev: TState) => KnownAny>(this: TState, key: TKey, f: F): ReturnType<F>;
+  function use <TKey extends null | undefined, F extends (val: undefined, key: null, prev: TState) => KnownAny>(this: TState, key: TKey, f: F): ReturnType<F>;
 
   function use <TKey extends keyof TState>(this: TState, key: TKey): TState[TKey & keyof TState];
-  function use <TKey extends keyof TState, F extends (val: TState[TKey & keyof TState], key: TKey, prev: TState) => KnownAny>(this: TState, key: TKey, f: F): ReturnType<F>;
+  function use <TKey extends keyof TState, F extends (val: TState[TKey & keyof TState], key: TKey & keyof TState | null, prev: TState) => KnownAny>(this: TState, key: TKey, f: F): ReturnType<F>;
 
   function use <TKey extends keyof TState | null | undefined>(this: TState, key: TKey): undefined | TState[TKey & keyof TState];
-  function use <TKey extends keyof TState | null | undefined, F extends (val: undefined | TState[TKey & keyof TState], key: TKey, prev: TState) => KnownAny>(this: TState, key: TKey, f: F): ReturnType<F>;
+  function use <TKey extends keyof TState | null | undefined, F extends (val: undefined | TState[TKey & keyof TState], key: TKey & keyof TState | null, prev: TState) => KnownAny>(this: TState, key: TKey, f: F): ReturnType<F>;
 
   function use <TKeys extends readonly (keyof TState)[]>(this: TState, keys: readonly [...TKeys]): { [K in keyof TKeys]: TState[TKeys[K] & keyof TState] };
-  function use <TKeys extends readonly (keyof TState)[], F extends (val: { [K in keyof TKeys]: TState[TKeys[K] & keyof TState] }, key: TKeys, prev: TState) => KnownAny>(this: TState, keys: readonly [...TKeys], f: F): ReturnType<F>;
+  function use <TKeys extends readonly (keyof TState)[], F extends (val: { [K in keyof TKeys]: TState[TKeys[K] & keyof TState] }, key: keyof TState | null, prev: TState) => KnownAny>(this: TState, keys: readonly [...TKeys], f: F): ReturnType<F>;
 
-  function use <TKeys extends readonly (keyof TState)[] | null | undefined>(this: TState, keys: TKeys): undefined | { [K in keyof TKeys]: TState[TKeys[K] & keyof TState] };
-  function use <TKeys extends readonly (keyof TState)[] | null | undefined, F extends (val: undefined | { [K in keyof TKeys]: TState[TKeys[K] & keyof TState] }, key: TKeys, prev: TState) => KnownAny>(this: TState, keys: TKeys, f: F): ReturnType<F>;
+  function use <TKeys extends readonly (keyof TState)[] | null | undefined>(this: TState, keys: TKeys): TKeys extends null | undefined ? undefined : { [K in keyof TKeys]: TState[TKeys[K] & keyof TState] };
+  function use <TKeys extends readonly (keyof TState)[] | null | undefined, F extends (val: TKeys extends null | undefined ? undefined : { [K in keyof TKeys]: TState[TKeys[K] & keyof TState] }, key: keyof TState | null, prev: TState) => KnownAny>(this: TState, keys: TKeys, f: F): ReturnType<F>;
 
   // function use <TKey extends KeyExtends<TState>, F extends (val: UseResult<TState, TKey>, key: TKey, prev: TState) => KnownAny>(this: TState, key: TKey, f: F): ReturnType<F>;
-  function use(this: TState, keys: KeyExtends<TState>, f?: (...args: KnownAny) => unknown): KnownAny {
+  function use(this: TState, keys: null | undefined | keyof TState | readonly (keyof TState)[], f?: (...args: KnownAny) => unknown): KnownAny {
     const updateKey = (keys instanceof Array ? keys : [keys]).map(String).join();
     const getRawState = () => {
       if (keys === null || keys === undefined) {
@@ -54,7 +52,7 @@ export default function getUse<TState>() {
     const getState = (key?: keyof TState, prevValue?: unknown) => {
       const rawState = getRawState();
       if (typeof f === 'function') {
-        return f(rawState, keys, typeof key !== 'undefined' ? {
+        return f(rawState, key ?? null, typeof key !== 'undefined' ? {
           ...this,
           [key]: prevValue,
         } : { ...this });

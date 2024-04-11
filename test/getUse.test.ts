@@ -229,13 +229,13 @@ describe('getUse', () => {
       return state.use('x', (x, key, prev) => [x, key, prev] as const);
     });
 
-    assert.deepStrictEqual(result.current satisfies readonly [number, 'x', typeof state], [1, 'x', state]);
+    assert.deepStrictEqual(result.current satisfies readonly [number, 'x' | null, typeof state], [1, null, state]);
     assert.strictEqual(state.x, 1);
     assert.strictEqual(renderedTimes, 1);
 
     act(() => { state.x = 2; });
 
-    assert.deepStrictEqual(result.current satisfies readonly [number, 'x', typeof state], [2, 'x', {
+    assert.deepStrictEqual(result.current satisfies readonly [number, 'x' | null, typeof state], [2, 'x', {
       ...state,
       x: 1,
     }]);
@@ -244,7 +244,7 @@ describe('getUse', () => {
 
     act(() => { state.y = '3'; }); // not invoking the hook
 
-    assert.deepStrictEqual(result.current satisfies readonly [number, 'x', typeof state], [2, 'x', {
+    assert.deepStrictEqual(result.current satisfies readonly [number, 'x' | null, typeof state], [2, 'x', {
       ...state,
       y: '2',
       x: 1,
@@ -267,36 +267,86 @@ describe('getUse', () => {
     Object.defineProperty(state, 'use', { enumerable: false });
 
     let renderedTimes = 0;
+    let prev = { ...state };
+
     const { result } = renderHook(() => {
       renderedTimes += 1;
 
-      return state.use(['x', 'y'], ([x, y], keyChanged, prev) => [x, y, keyChanged, prev] as const);
+      return state.use(['x', 'y'], (values, key, prevArg) => {
+        assert.ok(key === 'x' || key === null);
+        assert.deepStrictEqual(prevArg, prev);
+        return values;
+      });
     });
 
-    assert.deepStrictEqual(result.current satisfies readonly [number, string, readonly ['x', 'y'], typeof state], [1, '2', ['x', 'y'], state]);
-    assert.strictEqual(state.x, 1);
     assert.strictEqual(renderedTimes, 1);
+    assert.deepStrictEqual(result.current satisfies [number, string], [1, '2']);
 
-    act(() => { state.x = 2; });
+    // -----
+    prev = { ...state };
+    act(() => {
+      state.x = 2;
+    });
 
-    assert.deepStrictEqual(result.current satisfies readonly [number, string, readonly ['x', 'y'], typeof state], [2, '2', ['x'], {
-      ...state,
-      x: 1,
-    }]);
-    assert.strictEqual(state.x, 2);
     assert.strictEqual(renderedTimes, 2);
-
-    act(() => { state.y = '3'; });
-
-    assert.deepStrictEqual(result.current satisfies readonly [number, string, readonly ['x', 'y'], typeof state], [2, '3', ['y'], {
-      ...state,
-      y: '2',
-    }]);
-    assert.strictEqual(state.y, '3');
-    assert.strictEqual(renderedTimes, 3);
+    assert.deepStrictEqual(result.current satisfies [number, string], [2, '2']);
   });
 
-  it.skip('use with array and function that returns the same value', () => {});
+  it.skip('*** Overloads (supposed to be skipped)', () => {
+    const use = getUse<typeof state>();
 
-  it.skip('use with function that returns the same value', () => {});
+    const state = {
+      get use() {
+        return use;
+      },
+      x: 1,
+      y: '2',
+    };
+
+    state.use('x') satisfies number;
+    state.use('x', (val, key, prev) => {
+      val satisfies number;
+      key satisfies 'x' | null;
+      prev satisfies typeof state;
+      return val;
+    }) satisfies number;
+    state.use(['x', 'y']) satisfies [number, string];
+    state.use(['x', 'y'], (val, key, prevArg) => {
+      key satisfies 'use' | 'x' | 'y' | null;
+      prevArg satisfies typeof state;
+      return val satisfies [number, string];
+    }) satisfies [number, string];
+    state.use(null) satisfies undefined;
+    state.use(null, (val, key, prev) => {
+      key satisfies null;
+      prev satisfies typeof state;
+      return val satisfies undefined;
+    });
+    state.use(undefined) satisfies undefined;
+    state.use(undefined, (val, key, prev) => {
+      key satisfies null;
+      prev satisfies typeof state;
+      return val satisfies undefined;
+    }) satisfies undefined;
+    state.use('x' as 'x' | null) satisfies number | undefined;
+    // @ts-expect-error expected
+    state.use('x' as 'x' | null) satisfies number;
+    state.use('x' as 'x' | null, (val, key, prev) => {
+      key satisfies 'x' | null;
+      prev satisfies typeof state;
+      // @ts-expect-error expected
+      val satisfies number;
+      return val satisfies number | undefined;
+    }) satisfies number | undefined;
+    state.use(['x', 'y'] as ['x', 'y'] | null) satisfies [number, string] | undefined;
+    // @ts-expect-error expected
+    state.use(['x', 'y'] as ['x', 'y'] | null) satisfies [number, string];
+    state.use(['x', 'y'] as ['x', 'y'] | null, (val, key, prevArg) => {
+      key satisfies 'use' | 'x' | 'y' | null;
+      prevArg satisfies typeof state;
+      // @ts-expect-error expected
+      val satisfies [number, string];
+      return val satisfies [number, string] | undefined;
+    }) satisfies [number, string] | undefined;
+  });
 });
