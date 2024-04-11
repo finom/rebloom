@@ -108,7 +108,7 @@ describe('createRecord', () => {
     const { result } = renderHook(() => {
       renderedTimes += 1;
 
-      return state.useAll((d) => ({ ...d, foo }));
+      return state.useAll((s) => ({ ...s, foo }));
     });
 
     act(() => {
@@ -170,11 +170,147 @@ describe('createRecord', () => {
     assert.strictEqual(renderedTimes, 4);
   });
 
-  it.skip('useAll with function that returns the same value', async () => {});
+  it('useAll with function that returns the same value', async () => {
+    const state = createRecord({
+      x: 1,
+      y: 2,
+    });
 
-  it.skip('listen', async () => {});
+    let renderedTimes = 0;
+    let keysChanged: (keyof typeof state)[] = [];
+    let prev = { ...state };
+    const { result } = renderHook(() => {
+      renderedTimes += 1;
 
-  it.skip('listenAll', async () => {});
+      return state.useAll((s, keysChangedArg, prevArg) => {
+        assert.deepStrictEqual(keysChangedArg, keysChanged);
+        assert.deepStrictEqual(prevArg, prev);
+        return s.x + s.y;
+      });
+    });
 
-  it.skip('toJSON', async () => {});
+    assert.strictEqual(result.current, 3);
+
+    // -----
+    keysChanged = ['x'];
+    prev = { ...state };
+
+    act(() => {
+      // y is still 2
+      state.x = 3;
+    });
+
+    await new Promise((resolve) => { setTimeout(resolve, 0); });
+
+    assert.strictEqual(state[extendedTimesSymbol], 1);
+    assert.strictEqual(renderedTimes, 2);
+    assert.strictEqual(result.current, 5);
+
+    // -----
+    keysChanged = ['x', 'y'];
+    prev = { ...state };
+
+    act(() => {
+      state.x = 2;
+      state.y = 3;
+    });
+
+    await new Promise((resolve) => { setTimeout(resolve, 0); });
+
+    assert.strictEqual(state[extendedTimesSymbol], 2);
+    assert.strictEqual(renderedTimes, 2);
+    assert.strictEqual(result.current, 5);
+  });
+
+  it('listen', () => {
+    const state = createRecord({
+      x: 1,
+      y: '2',
+    });
+
+    let prev: number;
+    let triggerTimes = 0;
+
+    const unlisten = state.listen('x', (x, key, prevObject) => {
+      triggerTimes += 1;
+      assert.strictEqual(x satisfies number, state.x);
+      assert.strictEqual(prevObject[key], prev);
+    });
+
+    prev = state.x;
+    state.x = 2;
+    assert.strictEqual(triggerTimes, 1);
+    prev = state.x;
+    state.x = 3;
+    assert.strictEqual(triggerTimes, 2);
+    unlisten();
+    prev = state.x;
+    state.x = 4;
+    assert.strictEqual(triggerTimes, 2);
+    prev = state.x;
+    state.x = 5;
+    assert.strictEqual(triggerTimes, 2);
+  });
+
+  it('listenAll', async () => {
+    const state = createRecord({
+      x: 1,
+      y: '2',
+    });
+
+    let prev: number;
+    let triggerTimes = 0;
+
+    const unlisten = state.listenAll((o, keysChanged, prevObject) => {
+      triggerTimes += 1;
+      assert.strictEqual(o.x, state.x);
+      assert.strictEqual(o.y, state.y);
+      assert.deepStrictEqual(keysChanged, ['x']);
+      assert.strictEqual(prevObject.x, prev);
+      assert.strictEqual(prevObject.y, state.y);
+    });
+
+    prev = state.x;
+    state.x = 2;
+
+    await new Promise((resolve) => { setTimeout(resolve, 0); });
+
+    assert.strictEqual(triggerTimes, 1);
+    prev = state.x;
+    state.x = 3;
+
+    await new Promise((resolve) => { setTimeout(resolve, 0); });
+
+    assert.strictEqual(triggerTimes, 2);
+    unlisten();
+    prev = state.x;
+    state.x = 4;
+
+    await new Promise((resolve) => { setTimeout(resolve, 0); });
+
+    assert.strictEqual(triggerTimes, 2);
+    prev = state.x;
+    state.x = 5;
+
+    await new Promise((resolve) => { setTimeout(resolve, 0); });
+
+    assert.strictEqual(triggerTimes, 2);
+  });
+
+  it('toJSON', () => {
+    // TODO: what else to test here?
+    const state = createRecord({
+      x: 1,
+      y: '2',
+    });
+
+    assert.deepStrictEqual(state.toJSON(), { x: 1, y: '2' });
+
+    act(() => {
+      state.x = 2;
+      state.y = '3';
+    });
+
+    assert.deepStrictEqual(state.toJSON(), { x: 2, y: '3' });
+  });
 });

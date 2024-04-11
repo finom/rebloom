@@ -2,7 +2,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable no-confusing-arrow */
 /* eslint-disable @typescript-eslint/no-unsafe-return */
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import getUse from './getUse';
 import { extendedTimesSymbol } from './symbols';
 import getListen from './getListen';
@@ -37,17 +37,18 @@ export default function createRecord<T extends object>(init?: T) {
     listen: getListen<T & Symbols>(),
     useAll(this: RebloomRecord<T>, f?: (o: T, keysChanged: (keyof T)[], prev: T) => any) {
       const [state, setState] = useState(() => f ? f({ ...this }, keysChanged, prev) : { ...this });
+      const stateRef = useRef(state); // workaround to reduce # of renders when the same value is returned
 
       useEffect(() => listenOne(target, extendedTimesSymbol, () => {
-        setState(f ? f({ ...this }, keysChanged, prev) : { ...this });
+        const newState = f ? f({ ...this }, keysChanged, prev) : { ...this };
+        if (newState !== stateRef.current) {
+          stateRef.current = newState;
+          setState(newState);
+        }
       // eslint-disable-next-line react-hooks/exhaustive-deps
-      }), []); // Deps array?
+      }), []); // TODO: Add deps array to useAll (???)
 
       return state;
-      // TODO make it to be executed once if return the same object
-      // const extendedTimes = this.use(extendedTimesSymbol);
-      // eslint-disable-next-line react-hooks/exhaustive-deps
-      // return useMemo(() => f ? f({ ...this }, keysChanged, prev) : { ...this }, [extendedTimes]);
     },
     listenAll(this: RebloomRecord<T>, h: (o: T, keysChanged: (keyof T)[], prev: T) => void) {
       return listenOne(target, extendedTimesSymbol, () => {

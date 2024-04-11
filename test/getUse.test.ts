@@ -21,7 +21,7 @@ describe('getUse', () => {
     const { result } = renderHook(() => {
       renderedTimes += 1;
 
-      return state.use('x' as 'x' | null);
+      return state.use('x');
     });
 
     assert.strictEqual(result.current, 1);
@@ -118,10 +118,10 @@ describe('getUse', () => {
     const { result } = renderHook(() => {
       renderedTimes += 1;
 
-      return state.use(['x', 'y'] as ['x', 'y'] | null);
+      return state.use(['x', 'y']);
     });
 
-    assert.deepStrictEqual(result.current satisfies [number, string] | undefined, [1, '2']);
+    assert.deepStrictEqual(result.current satisfies [number, string], [1, '2']);
     assert.strictEqual(state.x, 1);
     assert.strictEqual(renderedTimes, 1);
 
@@ -242,7 +242,7 @@ describe('getUse', () => {
     assert.strictEqual(state.x, 2);
     assert.strictEqual(renderedTimes, 2);
 
-    act(() => { state.y = '3'; }); // not invoking the function
+    act(() => { state.y = '3'; }); // not invoking the hook
 
     assert.deepStrictEqual(result.current satisfies readonly [number, 'x', typeof state], [2, 'x', {
       ...state,
@@ -253,7 +253,48 @@ describe('getUse', () => {
     assert.strictEqual(renderedTimes, 2);
   });
 
-  it.skip('use with array and function', () => {});
+  it('use with array and function', () => {
+    const use = getUse<typeof state>();
+
+    const state = {
+      get use() {
+        return use;
+      },
+      x: 1,
+      y: '2',
+    };
+
+    Object.defineProperty(state, 'use', { enumerable: false });
+
+    let renderedTimes = 0;
+    const { result } = renderHook(() => {
+      renderedTimes += 1;
+
+      return state.use(['x', 'y'], ([x, y], keyChanged, prev) => [x, y, keyChanged, prev] as const);
+    });
+
+    assert.deepStrictEqual(result.current satisfies readonly [number, string, readonly ['x', 'y'], typeof state], [1, '2', ['x', 'y'], state]);
+    assert.strictEqual(state.x, 1);
+    assert.strictEqual(renderedTimes, 1);
+
+    act(() => { state.x = 2; });
+
+    assert.deepStrictEqual(result.current satisfies readonly [number, string, readonly ['x', 'y'], typeof state], [2, '2', ['x'], {
+      ...state,
+      x: 1,
+    }]);
+    assert.strictEqual(state.x, 2);
+    assert.strictEqual(renderedTimes, 2);
+
+    act(() => { state.y = '3'; });
+
+    assert.deepStrictEqual(result.current satisfies readonly [number, string, readonly ['x', 'y'], typeof state], [2, '3', ['y'], {
+      ...state,
+      y: '2',
+    }]);
+    assert.strictEqual(state.y, '3');
+    assert.strictEqual(renderedTimes, 3);
+  });
 
   it.skip('use with array and function that returns the same value', () => {});
 
