@@ -102,11 +102,13 @@ describe('createRecord', () => {
       y: '2',
     });
 
+    let foo = 'bar1';
+
     let renderedTimes = 0;
     const { result } = renderHook(() => {
       renderedTimes += 1;
 
-      return state.useAll((d) => ({ ...d, foo: 'bar' }));
+      return state.useAll((d) => ({ ...d, foo }));
     });
 
     act(() => {
@@ -120,19 +122,22 @@ describe('createRecord', () => {
       x: number,
       y: string,
       foo: string,
-    }, { x: 2, y: '3', foo: 'bar' });
+    }, { x: 2, y: '3', foo: 'bar1' });
     assert.strictEqual(state[extendedTimesSymbol], 1);
     assert.strictEqual(state.x, 2);
     assert.strictEqual(renderedTimes, 2);
 
+    foo = 'bar2';
+
     act(() => {
+      // not changed
       state.x = 2;
       state.y = '3';
     });
 
     await new Promise((resolve) => { setTimeout(resolve, 0); });
 
-    assert.deepStrictEqual(result.current, { x: 2, y: '3', foo: 'bar' });
+    assert.deepStrictEqual(result.current, { x: 2, y: '3', foo: 'bar1' });
     assert.strictEqual(state[extendedTimesSymbol], 1);
     assert.strictEqual(state.x, 2);
     assert.strictEqual(renderedTimes, 2);
@@ -144,12 +149,14 @@ describe('createRecord', () => {
 
     await new Promise((resolve) => { setTimeout(resolve, 0); });
 
-    assert.deepStrictEqual(result.current, { x: 3, y: '4', foo: 'bar' });
+    assert.deepStrictEqual(result.current, { x: 3, y: '4', foo: 'bar2' });
     assert.strictEqual(state[extendedTimesSymbol], 2);
     assert.strictEqual(state.x, 3);
     assert.strictEqual(renderedTimes, 3);
 
     assert.deepStrictEqual(state, { x: 3, y: '4' });
+
+    foo = 'bar3';
 
     act(() => {
       Object.assign(state, { x: 4, y: '5' });
@@ -157,11 +164,13 @@ describe('createRecord', () => {
 
     await new Promise((resolve) => { setTimeout(resolve, 0); });
 
-    assert.deepStrictEqual(result.current, { x: 4, y: '5', foo: 'bar' });
+    assert.deepStrictEqual(result.current, { x: 4, y: '5', foo: 'bar3' });
     assert.strictEqual(state[extendedTimesSymbol], 3);
     assert.strictEqual(state.x, 4);
     assert.strictEqual(renderedTimes, 4);
   });
+
+  it.skip('useAll with function that returns the same value', async () => {});
 
   it.skip('listen', async () => {});
 

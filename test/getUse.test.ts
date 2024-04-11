@@ -208,4 +208,54 @@ describe('getUse', () => {
     assert.strictEqual(state[x], 2);
     assert.strictEqual(renderedTimes, 2);
   });
+
+  it('use with function', () => {
+    const use = getUse<typeof state>();
+
+    const state = {
+      get use() {
+        return use;
+      },
+      x: 1,
+      y: '2',
+    };
+
+    Object.defineProperty(state, 'use', { enumerable: false });
+
+    let renderedTimes = 0;
+    const { result } = renderHook(() => {
+      renderedTimes += 1;
+
+      return state.use('x', (x, key, prev) => [x, key, prev] as const);
+    });
+
+    assert.deepStrictEqual(result.current satisfies readonly [number, 'x', typeof state], [1, 'x', state]);
+    assert.strictEqual(state.x, 1);
+    assert.strictEqual(renderedTimes, 1);
+
+    act(() => { state.x = 2; });
+
+    assert.deepStrictEqual(result.current satisfies readonly [number, 'x', typeof state], [2, 'x', {
+      ...state,
+      x: 1,
+    }]);
+    assert.strictEqual(state.x, 2);
+    assert.strictEqual(renderedTimes, 2);
+
+    act(() => { state.y = '3'; }); // not invoking the function
+
+    assert.deepStrictEqual(result.current satisfies readonly [number, 'x', typeof state], [2, 'x', {
+      ...state,
+      y: '2',
+      x: 1,
+    }]);
+    assert.strictEqual(state.y, '3');
+    assert.strictEqual(renderedTimes, 2);
+  });
+
+  it.skip('use with array and function', () => {});
+
+  it.skip('use with array and function that returns the same value', () => {});
+
+  it.skip('use with function that returns the same value', () => {});
 });
