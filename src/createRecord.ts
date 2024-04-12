@@ -97,5 +97,25 @@ export default function createRecord<T extends object>(init?: T) {
 
       return true;
     },
+
+    deleteProperty: (obj, prop) => {
+      if (prop in target) {
+        prev[prop as keyof T] = target[prop as keyof T];
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+        delete target[prop as keyof T];
+        keysChanged.push(prop as keyof T);
+
+        if (!immediate) {
+          immediate = setTimeout(() => {
+            immediate = null;
+            target[extendedTimesSymbol] += 1;
+            keysChanged = [];
+            prev = { ...target };
+          }, 0);
+        }
+      }
+
+      return true;
+    },
   });
 }

@@ -308,7 +308,7 @@ describe('getUse', () => {
       val satisfies number;
       key satisfies 'x' | null;
       prev satisfies typeof state;
-      return val;
+      return val satisfies number;
     }) satisfies number;
     state.use(['x', 'y']) satisfies [number, string];
     state.use(['x', 'y'], (val, key, prevArg) => {

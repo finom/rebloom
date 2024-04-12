@@ -30,7 +30,7 @@ describe('createRecord', () => {
     assert.strictEqual(renderedTimes, 2);
   });
 
-  it('useAll', async () => {
+  it('useAll set property', async () => {
     const state = createRecord({
       x: 1,
       y: '2',
@@ -94,6 +94,37 @@ describe('createRecord', () => {
     assert.strictEqual(state[extendedTimesSymbol], 3);
     assert.strictEqual(state.x, 4);
     assert.strictEqual(renderedTimes, 4);
+  });
+
+  it('useAll delete property', async () => {
+    const state = createRecord<{
+      x?: number;
+      y: string;
+    }>({
+      x: 1,
+      y: '2',
+    });
+
+    let renderedTimes = 0;
+    const { result } = renderHook(() => {
+      renderedTimes += 1;
+
+      return state.useAll();
+    });
+
+    act(() => {
+      delete state.x;
+    });
+
+    await new Promise((resolve) => { setTimeout(resolve, 0); });
+
+    assert.deepStrictEqual(result.current satisfies {
+      x?: number,
+      y: string,
+    }, { y: '2' });
+    assert.strictEqual(state[extendedTimesSymbol], 1);
+    assert.strictEqual(state.x, undefined);
+    assert.strictEqual(renderedTimes, 2);
   });
 
   it('useAll with function', async () => {
