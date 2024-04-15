@@ -1,5 +1,5 @@
 import {
-  useCallback, useEffect, useMemo, useRef, useState,
+  useCallback, useEffect, useMemo, useState,
 } from 'react';
 import listenOne from './listenOne';
 import { KnownAny } from './types';
@@ -35,10 +35,11 @@ export default function getUse<TState>() {
   function use <TKeys extends readonly (keyof TState)[] | null | undefined, F extends (val: TKeys extends null | undefined ? undefined : { [K in keyof TKeys]: TState[TKeys[K] & keyof TState] }, key: keyof TState | null, prev: TState) => KnownAny>(this: TState, keys: TKeys, f: F): ReturnType<F>;
 
   // function use <TKey extends KeyExtends<TState>, F extends (val: UseResult<TState, TKey>, key: TKey, prev: TState) => KnownAny>(this: TState, key: TKey, f: F): ReturnType<F>;
-  function use(this: TState, keys: null | undefined | keyof TState | readonly (keyof TState)[], f?: (...args: KnownAny) => unknown): KnownAny {
+  function use(this: TState, keys: null | undefined | keyof TState | readonly (keyof TState)[], transform?: (...args: KnownAny) => unknown): KnownAny {
     // eslint-disable-next-line react-hooks/exhaustive-deps
     const memoKeys = useMemo(() => keys, [JSON.stringify(keys)]);
-    const initialRender = useRef(true);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    const memoTransform = useMemo(() => transform, []);
 
     const getRawState = useCallback(() => {
       if (memoKeys === null || memoKeys === undefined) {
@@ -56,38 +57,39 @@ export default function getUse<TState>() {
 
     const getState = useCallback((key: keyof TState | null, prevValue?: unknown) => {
       const rawState = getRawState();
-      if (typeof f === 'function') {
-        return f(rawState, key ?? null, key !== null ? {
+      if (typeof memoTransform === 'function') {
+        return memoTransform(rawState, key ?? null, key !== null ? {
           ...this,
           [key]: prevValue,
         } : { ...this });
       }
 
       return rawState;
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [getRawState]); // TODO: Add f to deps (?)
+    }, [getRawState, memoTransform]);
 
-    const [state, setState] = useState(() => getState(null));
+    const [stateInfo, setStateInfo] = useState<{
+      key: keyof TState | null,
+      prevValue: unknown,
+    }>({
+      key: null,
+      prevValue: undefined,
+    });
 
     useEffect(() => {
-      const handler = (key: keyof TState | null, prevValue: unknown) => setState(getState(key, prevValue));
+      const handler = (key: keyof TState | null, prevValue: unknown) => setStateInfo({
+        key,
+        prevValue,
+      });
 
       const unsubscribe = (memoKeys instanceof Array ? memoKeys : [memoKeys])
         .filter((key) => key !== null && key !== undefined)
         .map((key) => listenOne(this, key as keyof TState, (_v, prevValue) => handler(key as keyof TState, prevValue)));
-
-      if (initialRender.current) {
-        initialRender.current = false;
-      } else {
-        handler(null, undefined);
-      }
-
       return () => {
         unsubscribe.forEach((u) => u());
       };
     }, [getState, memoKeys]);
 
-    return state;
+    return useMemo(() => getState(stateInfo.key, stateInfo.prevValue), [getState, stateInfo]);
   }
 
   return use;
