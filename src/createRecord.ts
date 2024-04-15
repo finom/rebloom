@@ -33,7 +33,7 @@ export default function createRecord<T extends object>(init?: T) {
   const target: RebloomRecord<T> = {
     ...init as T,
     [extendedTimesSymbol]: 0,
-    use: getUse<T & Symbols>(), // transform argument?
+    use: getUse<T & Symbols>(),
     listen: getListen<T & Symbols>(),
     useAll(this: RebloomRecord<T>, f?: (o: T, keysChanged: (keyof T)[], prev: T) => any) {
       const [state, setState] = useState(() => f ? f({ ...this }, keysChanged, prev) : { ...this });
@@ -46,7 +46,7 @@ export default function createRecord<T extends object>(init?: T) {
           setState(newState);
         }
       // eslint-disable-next-line react-hooks/exhaustive-deps
-      }), []); // TODO: Add deps array to useAll (???)
+      }), []); // TODO: Add deps array to useAll (?)
 
       return state;
     },
@@ -83,7 +83,7 @@ export default function createRecord<T extends object>(init?: T) {
         prev[prop as keyof T] = target[prop as keyof T];
         // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
         target[prop as keyof T] = value;
-        keysChanged.push(prop as keyof T);
+        keysChanged.push(prop as keyof T); // TODO: Turn into Set
 
         if (!immediate) {
           immediate = setTimeout(() => {

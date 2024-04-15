@@ -1,4 +1,6 @@
-import { useEffect, useState } from 'react';
+import {
+  useCallback, useEffect, useMemo, useState,
+} from 'react';
 import listenOne from './listenOne';
 import { KnownAny } from './types';
 
@@ -34,22 +36,24 @@ export default function getUse<TState>() {
 
   // function use <TKey extends KeyExtends<TState>, F extends (val: UseResult<TState, TKey>, key: TKey, prev: TState) => KnownAny>(this: TState, key: TKey, f: F): ReturnType<F>;
   function use(this: TState, keys: null | undefined | keyof TState | readonly (keyof TState)[], f?: (...args: KnownAny) => unknown): KnownAny {
-    const updateKey = (keys instanceof Array ? keys : [keys]).map(String).join();
-    const getRawState = () => {
-      if (keys === null || keys === undefined) {
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    const memoKeys = useMemo(() => keys, [JSON.stringify(keys)]);
+
+    const getRawState = useCallback(() => {
+      if (memoKeys === null || memoKeys === undefined) {
         return undefined;
       }
 
-      if (keys instanceof Array) {
-        const value = keys.map((key) => this[key]);
+      if (memoKeys instanceof Array) {
+        const value = memoKeys.map((key) => this[key]);
         return value;
       }
 
-      const value = this[keys];
+      const value = this[memoKeys];
       return value;
-    };
+    }, [memoKeys]);
 
-    const getState = (key?: keyof TState, prevValue?: unknown) => {
+    const getState = useCallback((key?: keyof TState, prevValue?: unknown) => {
       const rawState = getRawState();
       if (typeof f === 'function') {
         return f(rawState, key ?? null, typeof key !== 'undefined' ? {
@@ -59,22 +63,21 @@ export default function getUse<TState>() {
       }
 
       return rawState;
-    };
+    }, [f, getRawState]);
 
     const [state, setState] = useState(() => getState());
 
     useEffect(() => {
       const handler = (key: keyof TState, prevValue: unknown) => setState(getState(key, prevValue));
 
-      const unsubscribe = (keys instanceof Array ? keys : [keys])
+      const unsubscribe = (memoKeys instanceof Array ? memoKeys : [memoKeys])
         .filter((key) => key !== null && key !== undefined)
         .map((key) => listenOne(this, key as keyof TState, (_v, prevValue) => handler(key as keyof TState, prevValue)));
 
       return () => {
         unsubscribe.forEach((u) => u());
       };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [updateKey]);
+    }, [getState, memoKeys]);
 
     return state;
   }
