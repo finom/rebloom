@@ -1,5 +1,5 @@
 import {
-  useCallback, useEffect, useMemo, useState,
+  useCallback, useEffect, useMemo, useRef, useState,
 } from 'react';
 import listenOne from './listenOne';
 import { KnownAny } from './types';
@@ -38,6 +38,7 @@ export default function getUse<TState>() {
   function use(this: TState, keys: null | undefined | keyof TState | readonly (keyof TState)[], f?: (...args: KnownAny) => unknown): KnownAny {
     // eslint-disable-next-line react-hooks/exhaustive-deps
     const memoKeys = useMemo(() => keys, [JSON.stringify(keys)]);
+    const initialRender = useRef(true);
 
     const getRawState = useCallback(() => {
       if (memoKeys === null || memoKeys === undefined) {
@@ -53,26 +54,33 @@ export default function getUse<TState>() {
       return value;
     }, [memoKeys]);
 
-    const getState = useCallback((key?: keyof TState, prevValue?: unknown) => {
+    const getState = useCallback((key: keyof TState | null, prevValue?: unknown) => {
       const rawState = getRawState();
       if (typeof f === 'function') {
-        return f(rawState, key ?? null, typeof key !== 'undefined' ? {
+        return f(rawState, key ?? null, key !== null ? {
           ...this,
           [key]: prevValue,
         } : { ...this });
       }
 
       return rawState;
-    }, [f, getRawState]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [getRawState]); // TODO: Add f to deps (?)
 
-    const [state, setState] = useState(() => getState());
+    const [state, setState] = useState(() => getState(null));
 
     useEffect(() => {
-      const handler = (key: keyof TState, prevValue: unknown) => setState(getState(key, prevValue));
+      const handler = (key: keyof TState | null, prevValue: unknown) => setState(getState(key, prevValue));
 
       const unsubscribe = (memoKeys instanceof Array ? memoKeys : [memoKeys])
         .filter((key) => key !== null && key !== undefined)
         .map((key) => listenOne(this, key as keyof TState, (_v, prevValue) => handler(key as keyof TState, prevValue)));
+
+      if (initialRender.current) {
+        initialRender.current = false;
+      } else {
+        handler(null, undefined);
+      }
 
       return () => {
         unsubscribe.forEach((u) => u());
