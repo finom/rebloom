@@ -1,6 +1,6 @@
 {
   "name": "rebloom",
-  "version": "0.0.10",
+  "version": "0.0.11",
   "description": "Type-safe React application state library with zero setup",
   "main": "dist/index.js",
   "scripts": {
