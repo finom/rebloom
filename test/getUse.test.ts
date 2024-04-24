@@ -253,6 +253,49 @@ describe('getUse', () => {
     assert.strictEqual(renderedTimes, 2);
   });
 
+  it('use with function and deps', () => {
+    const use = getUse<typeof state>();
+
+    const state = {
+      get use() {
+        return use;
+      },
+      x: 1,
+    };
+
+    Object.defineProperty(state, 'use', { enumerable: false });
+
+    let renderedTimes = 0;
+    let invokedTimes = 0;
+    const { result, rerender } = renderHook(({ y }: { y: number } = { y: 0 }) => {
+      renderedTimes += 1;
+
+      return state.use('x', (x) => {
+        invokedTimes += 1;
+        return x + y;
+      }, [y]);
+    });
+
+    assert.strictEqual(result.current, 1);
+    assert.strictEqual(state.x, 1);
+    assert.strictEqual(renderedTimes, 1);
+    assert.strictEqual(invokedTimes, 1);
+
+    rerender({ y: 10 });
+
+    assert.strictEqual(result.current, 11);
+    assert.strictEqual(state.x, 1);
+    assert.strictEqual(renderedTimes, 2);
+    assert.strictEqual(invokedTimes, 2);
+
+    rerender({ y: 10 });
+
+    assert.strictEqual(result.current, 11);
+    assert.strictEqual(state.x, 1);
+    assert.strictEqual(renderedTimes, 3);
+    assert.strictEqual(invokedTimes, 2);
+  });
+
   it('use with array and function', () => {
     const use = getUse<typeof state>();
 

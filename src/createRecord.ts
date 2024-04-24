@@ -2,11 +2,14 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable no-confusing-arrow */
 /* eslint-disable @typescript-eslint/no-unsafe-return */
-import { useEffect, useRef, useState } from 'react';
+import {
+  useEffect, useMemo, useRef, useState,
+} from 'react';
 import getUse from './getUse';
 import { extendedTimesSymbol } from './symbols';
 import getListen from './getListen';
 import listenOne from './listenOne';
+import { KnownAny } from './types';
 
 type Symbols = { [extendedTimesSymbol]: number };
 
@@ -15,7 +18,7 @@ type RebloomRecordRaw<T> = {
   use: ReturnType<typeof getUse<T & Symbols>>;
   listen: ReturnType<typeof getListen<T & Symbols>>;
   useAll: {
-    <F extends (o: T, keysChanged: (keyof T)[], prev: T) => any>(f: F): ReturnType<F>;
+    <F extends (o: T, keysChanged: (keyof T)[], prev: T) => any>(f: F, deps?: KnownAny[]): ReturnType<F>;
     (): T;
   };
   listenAll: (h: (o: T, keysChanged: (keyof T)[], prev: T) => void) => () => void;
@@ -35,18 +38,33 @@ export default function createRecord<T extends object>(init?: T) {
     [extendedTimesSymbol]: 0,
     use: getUse<T & Symbols>(),
     listen: getListen<T & Symbols>(),
-    useAll(this: RebloomRecord<T>, f?: (o: T, keysChanged: (keyof T)[], prev: T) => any) {
-      const [state, setState] = useState(() => f ? f({ ...this }, keysChanged, prev) : { ...this });
+    useAll(this: RebloomRecord<T>, transform?: (o: T, keysChanged: (keyof T)[], prev: T) => any, deps?: KnownAny[]) {
+      // eslint-disable-next-line react-hooks/exhaustive-deps
+      const memoTransform = useMemo(() => transform, deps ?? []);
+      const [state, setState] = useState(() => memoTransform ? memoTransform({ ...this }, keysChanged, prev) : { ...this });
       const stateRef = useRef(state); // workaround to reduce # of renders when the same value is returned
 
-      useEffect(() => listenOne(target, extendedTimesSymbol, () => {
-        const newState = f ? f({ ...this }, keysChanged, prev) : { ...this };
+      useEffect(() => {
+        const handler = () => {
+          const newState = memoTransform ? memoTransform({ ...this }, keysChanged, prev) : { ...this };
+          if (newState !== stateRef.current) {
+            stateRef.current = newState;
+            setState(newState);
+          }
+        };
+
+        return listenOne(target, extendedTimesSymbol, handler);
+      }, [memoTransform]); // TODO: Add deps array to useAll (?)
+
+      useEffect(() => {
+        if (!deps) return;
+        const newState = memoTransform ? memoTransform({ ...this }, keysChanged, prev) : { ...this };
         if (newState !== stateRef.current) {
           stateRef.current = newState;
           setState(newState);
         }
       // eslint-disable-next-line react-hooks/exhaustive-deps
-      }), []); // TODO: Add deps array to useAll (?)
+      }, [memoTransform]);
 
       return state;
     },

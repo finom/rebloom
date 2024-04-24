@@ -200,6 +200,110 @@ describe('createRecord', () => {
     assert.strictEqual(state.x, 4);
     assert.strictEqual(renderedTimes, 4);
   });
+  /*
+  it('use with function and deps', () => {
+    const use = getUse<typeof state>();
+
+    const state = {
+      get use() {
+        return use;
+      },
+      x: 1,
+    };
+
+    Object.defineProperty(state, 'use', { enumerable: false });
+
+    let renderedTimes = 0;
+    let invokedTimes = 0;
+    const { result, rerender } = renderHook(({ y }: { y: number }) => {
+      renderedTimes += 1;
+
+      return state.use('x', (x) => {
+        invokedTimes += 1;
+        return x + (y ?? 0);
+      }, [y]);
+    });
+
+    assert.strictEqual(result.current, 1);
+    assert.strictEqual(state.x, 1);
+    assert.strictEqual(renderedTimes, 1);
+    assert.strictEqual(invokedTimes, 1);
+
+    rerender({ y: 10 });
+
+    assert.strictEqual(result.current, 11);
+    assert.strictEqual(state.x, 1);
+    assert.strictEqual(renderedTimes, 2);
+    assert.strictEqual(invokedTimes, 2);
+
+    rerender({ y: 10 });
+
+    assert.strictEqual(result.current, 11);
+    assert.strictEqual(state.x, 1);
+    assert.strictEqual(renderedTimes, 3);
+    assert.strictEqual(invokedTimes, 2);
+  });
+  */
+  it('useAll with function and deps', async () => {
+    const state = createRecord({
+      x: 1,
+    });
+
+    let renderedTimes = 0;
+    let invokedTimes = 0;
+    const { result, rerender } = renderHook(({ y }: { y: number } = { y: 0 }) => {
+      renderedTimes += 1;
+
+      return state.useAll((s) => {
+        invokedTimes += 1;
+        return (s.x + y);
+      }, [y]);
+    });
+
+    assert.strictEqual(result.current, 1);
+    assert.strictEqual(state.x, 1);
+    assert.strictEqual(renderedTimes, 1);
+    assert.strictEqual(invokedTimes, 2);
+
+    rerender({ y: 10 });
+
+    assert.strictEqual(result.current, 11);
+    assert.strictEqual(state.x, 1);
+    assert.strictEqual(renderedTimes, 3);
+    assert.strictEqual(invokedTimes, 3);
+
+    rerender({ y: 10 });
+
+    assert.strictEqual(result.current, 11);
+    assert.strictEqual(state.x, 1);
+    assert.strictEqual(renderedTimes, 4);
+    assert.strictEqual(invokedTimes, 3);
+
+    act(() => {
+      state.x = 2;
+    });
+
+    await new Promise((resolve) => { setTimeout(resolve, 0); });
+
+    assert.strictEqual(result.current, 12);
+    assert.strictEqual(state.x, 2);
+    assert.strictEqual(renderedTimes, 5);
+    assert.strictEqual(invokedTimes, 4);
+
+    rerender({ y: 10 });
+
+    assert.strictEqual(result.current, 12);
+    assert.strictEqual(state.x, 2);
+    assert.strictEqual(renderedTimes, 6);
+    assert.strictEqual(invokedTimes, 4);
+
+    rerender({ y: 11 });
+
+    assert.strictEqual(result.current, 13);
+    assert.strictEqual(state.x, 2);
+    assert.strictEqual(renderedTimes, 8);
+    assert.strictEqual(invokedTimes, 5);
+  });
 
   it('useAll with function that returns the same value', async () => {
     const state = createRecord({
