@@ -17,7 +17,7 @@ export default function listenOne<TState, TKey extends keyof TState>(
       configurable: false,
       get: () => value,
       set: (newValue: TState[TKey]) => {
-        const prevValue = givenObject[key];
+        const prevValue = value;
 
         if (prevValue !== newValue) {
           value = newValue;
