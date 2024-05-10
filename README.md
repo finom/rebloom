@@ -79,4 +79,41 @@ const appState: AppState = {
 }
 ```
 
-More docs are coming soon...
+### Static class
+
+Use the same principle as with an instantiable class, but all class members are defined with the `static` prefix, and the class isn't instantiated but used directly as an object.
+
+
+```ts
+// appState.ts
+import { getUse } from 'rebloom';
+
+export default class AppState {
+  // define "use"
+  static readonly use = getUse<typeof AppState>();
+
+  // define other properties
+  static count = 0;
+  static ids: number[] = [];
+  
+  // define methods
+  static readonly increment = () => this.count++;
+  static readonly decrement = () => this.count--;
+}
+```
+
+```ts
+// MyComponent.ts
+import AppState from './appState';
+
+const MyComponent = () => {
+  const count = AppState.use('count');
+  const ids = AppState.use('ids');
+
+  return (
+    <div onClick={() => AppState.count++}>Clicks: {count}</div>
+  )
+}
+
+export default MyComponent;
+```
