@@ -117,3 +117,5 @@ const MyComponent = () => {
 
 export default MyComponent;
 ```
+
+That's not it. More docs are coming soon.
