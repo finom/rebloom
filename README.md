@@ -1,4 +1,4 @@
-# 🌻 rebloom (WIP)
+# 🌼 rebloom (WIP)
 
 <br>
 <p align="center">
