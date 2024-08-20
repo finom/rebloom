@@ -103,6 +103,52 @@ describe('getUse', () => {
     assert.strictEqual(renderedTimes, 2);
   });
 
+  it('Utilises built-in batching', () => {
+    const use = getUse<typeof state>();
+
+    const state = {
+      get use() {
+        return use;
+      },
+      x: 1,
+      y: 2,
+      z: 3,
+    };
+
+    Object.defineProperty(state, 'use', { enumerable: false });
+
+    let renderedTimes = 0;
+    const { result } = renderHook(() => {
+      renderedTimes += 1;
+
+      return [state.use('x'), state.use('y'), state.use('z')] as const;
+    });
+
+    assert.deepStrictEqual(result.current satisfies (readonly [number, number, number]), [1, 2, 3]);
+    assert.strictEqual(renderedTimes, 1);
+
+    act(() => {
+      state.x += 1;
+      state.y += 1;
+      state.z += 1;
+    });
+
+    assert.deepStrictEqual(result.current satisfies (readonly [number, number, number]), [2, 3, 4]);
+
+    assert.strictEqual(renderedTimes, 2);
+
+    // one more time
+    act(() => {
+      state.x += 1;
+      state.y += 1;
+      state.z += 1;
+    });
+
+    assert.deepStrictEqual(result.current satisfies (readonly [number, number, number]), [3, 4, 5]);
+
+    assert.strictEqual(renderedTimes, 3);
+  });
+
   it('Works with readonly arrays', () => {
     class State {
       use = getUse<State>();

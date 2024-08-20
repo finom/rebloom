@@ -1,5 +1,5 @@
 module.exports = {
-  ignorePatterns: ['dist/*'],
+  ignorePatterns: ['dist/*', 'docs/*'], // disable docs temporarily
   extends: [
     'airbnb',
     'airbnb-typescript',

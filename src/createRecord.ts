@@ -1,6 +1,4 @@
 /* eslint-disable @typescript-eslint/no-unsafe-assignment */
-/* eslint-disable @typescript-eslint/no-explicit-any */
-/* eslint-disable no-confusing-arrow */
 /* eslint-disable @typescript-eslint/no-unsafe-return */
 import {
   useEffect, useMemo, useRef, useState,
@@ -18,7 +16,7 @@ type RebloomRecordRaw<T> = {
   use: ReturnType<typeof getUse<T & Symbols>>;
   listen: ReturnType<typeof getListen<T & Symbols>>;
   useAll: {
-    <F extends (o: T, keysChanged: (keyof T)[], prev: T) => any>(f: F, deps?: KnownAny[]): ReturnType<F>;
+    <F extends (o: T, keysChanged: (keyof T)[], prev: T) => KnownAny>(f: F, deps?: KnownAny[]): ReturnType<F>;
     (): T;
   };
   listenAll: (h: (o: T, keysChanged: (keyof T)[], prev: T) => void) => () => void;
@@ -38,10 +36,10 @@ export default function createRecord<T extends object>(init?: T) {
     [extendedTimesSymbol]: 0,
     use: getUse<T & Symbols>(),
     listen: getListen<T & Symbols>(),
-    useAll(this: RebloomRecord<T>, transform?: (o: T, keysChanged: (keyof T)[], prev: T) => any, deps?: KnownAny[]) {
+    useAll(this: RebloomRecord<T>, transform?: (o: T, keysChanged: (keyof T)[], prev: T) => KnownAny, deps?: KnownAny[]) {
       // eslint-disable-next-line react-hooks/exhaustive-deps
       const memoTransform = useMemo(() => transform, deps ?? []);
-      const [state, setState] = useState(() => memoTransform ? memoTransform({ ...this }, keysChanged, prev) : { ...this });
+      const [state, setState] = useState(() => (memoTransform ? memoTransform({ ...this }, keysChanged, prev) : { ...this }));
       const stateRef = useRef(state); // workaround to reduce # of renders when the same value is returned
 
       useEffect(() => {
@@ -54,7 +52,7 @@ export default function createRecord<T extends object>(init?: T) {
         };
 
         return listenOne(target, extendedTimesSymbol, handler);
-      }, [memoTransform]); // TODO: Add deps array to useAll (?)
+      }, [memoTransform]);
 
       useEffect(() => {
         if (!deps) return;

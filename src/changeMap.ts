@@ -5,12 +5,12 @@ import type { Handler, KnownAny } from './types';
 // for example two different scripts that both use their own rebloom instance
 // and they share one object to listen to
 const globalObject = typeof window !== 'undefined'
-  ? (window as { __useChangeObjectMap?: WeakMap<KnownAny, Record<KnownAny, Handler<KnownAny>[]>> })
+  ? (window as { __rebloomObjectMap?: WeakMap<KnownAny, Record<KnownAny, Handler<KnownAny>[]>> })
   : {};
 
-const changeMap = globalObject.__useChangeObjectMap
+const changeMap = globalObject.__rebloomObjectMap
   || new WeakMap<KnownAny, Record<KnownAny, Handler<KnownAny>[]>>();
 
-globalObject.__useChangeObjectMap = changeMap;
+globalObject.__rebloomObjectMap = changeMap;
 
 export default changeMap;

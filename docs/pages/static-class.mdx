@@ -1,0 +1,47 @@
+import RebloomLogo from '../components/RebloomLogo'
+
+# Why Static Classes
+
+State objects in <RebloomLogo /> can be defined 3 equally correct ways.
+
+## Object Literal
+
+```ts
+const use = getUse<typeof state>();
+
+const state = {
+    get use() {
+        return use;
+    },
+    x: 1,
+    y: '2',
+};
+
+Object.defineProperty(state, 'use', { enumerable: false });
+```
+
+## Class Instance
+
+```ts
+class State {
+    use = getUse<State>();
+
+    x = 1;
+
+    y = '2';
+}
+
+const state = new State();
+```
+
+## Static Class
+
+```ts
+class State {
+    static use = getUse<typeof State>();
+
+    static x = 1;
+
+    static y = '2';
+}
+```
