@@ -15,7 +15,7 @@
     "beta": "npm t && npm version prerelease --preid=beta && npm run build && npm publish --tag beta && git push && git push --tags",
     "BREAKING-major": "npm t && npm version major && npm run build && npm publish && git push && git push --tags",
     "toc": "./gh-md-toc --insert README.md && rm README.md.*",
-    "upgrade": "npx npm-check-updates -u && npm i --legacy-peer-deps"
+    "upgrade": "npx npm-check-updates -u -x eslint,eslint* && npm i --legacy-peer-deps"
   },
   "repository": {
     "type": "git",
@@ -39,8 +39,8 @@
   "homepage": "https://github.com/finom/rebloom#readme",
   "devDependencies": {
     "@testing-library/react-hooks": "^8.0.1",
-    "@types/node": "^20.12.7",
-    "@types/react": "^18.2.75",
+    "@types/node": "^22.13.5",
+    "@types/react": "^19.0.10",
     "@typescript-eslint/eslint-plugin": "^7.6.0",
     "@typescript-eslint/parser": "^7.6.0",
     "eslint": "^8.57.0",
@@ -50,10 +50,10 @@
     "eslint-plugin-jsx-a11y": "^6.8.0",
     "eslint-plugin-react": "^7.34.1",
     "eslint-plugin-react-hooks": "^4.6.0",
-    "react": "^18.2.0",
-    "react-test-renderer": "^18.2.0",
+    "react": "^19.0.0",
+    "react-test-renderer": "^19.0.0",
     "ts-node": "^10.9.2",
-    "typescript": "^5.4.5"
+    "typescript": "^5.7.3"
   },
   "peerDependencies": {
     "react": "*"
