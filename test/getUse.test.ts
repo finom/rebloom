@@ -6,7 +6,7 @@ import assert from 'node:assert';
 import { getUse } from '../src';
 
 describe('getUse', () => {
-  it('Extends class', () => {
+  it('Extends class', async () => {
     class State {
       use = getUse<State>();
 
@@ -30,12 +30,14 @@ describe('getUse', () => {
 
     act(() => { state.x = 2; });
 
+    await new Promise((resolve) => { setTimeout(resolve, 20); });
+
     assert.strictEqual(result.current, 2);
     assert.strictEqual(state.x, 2);
-    assert.strictEqual(renderedTimes, 2);
+    assert.strictEqual(renderedTimes, 3);
   });
 
-  it('Extends static class', () => {
+  it('Extends static class', async () => {
     class State {
       static use = getUse<typeof State>();
 
@@ -57,12 +59,14 @@ describe('getUse', () => {
 
     act(() => { state.x = 2; });
 
+    await new Promise((resolve) => { setTimeout(resolve, 20); });
+
     assert.strictEqual(result.current, 2);
     assert.strictEqual(state.x, 2);
-    assert.strictEqual(renderedTimes, 2);
+    assert.strictEqual(renderedTimes, 3);
   });
 
-  it('Extends object', () => {
+  it('Extends object', async () => {
     const use = getUse<typeof state>();
 
     const state = {
@@ -98,12 +102,14 @@ describe('getUse', () => {
 
     act(() => { state.x = 2; });
 
+    await new Promise((resolve) => { setTimeout(resolve, 20); });
+
     assert.strictEqual(result.current, 2);
     assert.strictEqual(state.x, 2);
-    assert.strictEqual(renderedTimes, 2);
+    assert.strictEqual(renderedTimes, 3);
   });
 
-  it('Utilises built-in batching', () => {
+  it('Utilises built-in batching', async () => {
     const use = getUse<typeof state>();
 
     const state = {
@@ -133,9 +139,11 @@ describe('getUse', () => {
       state.z += 1;
     });
 
+    await new Promise((resolve) => { setTimeout(resolve, 20); });
+
     assert.deepStrictEqual(result.current satisfies (readonly [number, number, number]), [2, 3, 4]);
 
-    assert.strictEqual(renderedTimes, 2);
+    assert.strictEqual(renderedTimes, 3);
 
     // one more time
     act(() => {
@@ -144,12 +152,14 @@ describe('getUse', () => {
       state.z += 1;
     });
 
+    await new Promise((resolve) => { setTimeout(resolve, 20); });
+
     assert.deepStrictEqual(result.current satisfies (readonly [number, number, number]), [3, 4, 5]);
 
-    assert.strictEqual(renderedTimes, 3);
+    assert.strictEqual(renderedTimes, 5);
   });
 
-  it('Works with readonly arrays', () => {
+  it('Works with readonly arrays', async () => {
     class State {
       use = getUse<State>();
 
@@ -173,18 +183,22 @@ describe('getUse', () => {
 
     act(() => { state.x = 2; });
 
+    await new Promise((resolve) => { setTimeout(resolve, 20); });
+
     assert.deepStrictEqual(result.current, [2, '2']);
     assert.strictEqual(state.x, 2);
-    assert.strictEqual(renderedTimes, 2);
+    assert.strictEqual(renderedTimes, 3);
 
     act(() => { state.y = '3'; });
 
+    await new Promise((resolve) => { setTimeout(resolve, 20); });
+
     assert.deepStrictEqual(result.current, [2, '3']);
     assert.strictEqual(state.y, '3');
-    assert.strictEqual(renderedTimes, 3);
+    assert.strictEqual(renderedTimes, 5);
   });
 
-  it('Works with regular arrays', () => {
+  it('Works with regular arrays', async () => {
     class State {
       use = getUse<State>();
 
@@ -212,18 +226,22 @@ describe('getUse', () => {
 
     act(() => { state.x = 2; });
 
+    await new Promise((resolve) => { setTimeout(resolve, 20); });
+
     assert.deepStrictEqual(result.current, [2, '2']);
     assert.strictEqual(state.x, 2);
-    assert.strictEqual(renderedTimes, 2);
+    assert.strictEqual(renderedTimes, 3);
 
     act(() => { state.y = '3'; });
 
+    await new Promise((resolve) => { setTimeout(resolve, 20); });
+
     assert.deepStrictEqual(result.current, [2, '3']);
     assert.strictEqual(state.y, '3');
-    assert.strictEqual(renderedTimes, 3);
+    assert.strictEqual(renderedTimes, 5);
   });
 
-  it('Supports symbols', () => {
+  it('Supports symbols', async () => {
     const x = Symbol('x');
     const y = Symbol('y');
 
@@ -250,12 +268,14 @@ describe('getUse', () => {
 
     act(() => { state[x] = 2; });
 
+    await new Promise((resolve) => { setTimeout(resolve, 20); });
+
     assert.strictEqual(result.current, 2);
     assert.strictEqual(state[x], 2);
-    assert.strictEqual(renderedTimes, 2);
+    assert.strictEqual(renderedTimes, 3);
   });
 
-  it('use with function', () => {
+  it('use with function', async () => {
     const use = getUse<typeof state>();
 
     const state = {
@@ -281,14 +301,18 @@ describe('getUse', () => {
 
     act(() => { state.x = 2; });
 
+    await new Promise((resolve) => { setTimeout(resolve, 20); });
+
     assert.deepStrictEqual(result.current satisfies readonly [number, 'x' | null, typeof state], [2, 'x', {
       ...state,
       x: 1,
     }]);
     assert.strictEqual(state.x, 2);
-    assert.strictEqual(renderedTimes, 2);
+    assert.strictEqual(renderedTimes, 3);
 
     act(() => { state.y = '3'; }); // not invoking the hook
+
+    await new Promise((resolve) => { setTimeout(resolve, 20); });
 
     assert.deepStrictEqual(result.current satisfies readonly [number, 'x' | null, typeof state], [2, 'x', {
       ...state,
@@ -296,7 +320,7 @@ describe('getUse', () => {
       x: 1,
     }]);
     assert.strictEqual(state.y, '3');
-    assert.strictEqual(renderedTimes, 2);
+    assert.strictEqual(renderedTimes, 3);
   });
 
   it('use with function and deps', () => {
@@ -342,7 +366,7 @@ describe('getUse', () => {
     assert.strictEqual(invokedTimes, 2);
   });
 
-  it('use with array and function', () => {
+  it('use with array and function', async () => {
     const use = getUse<typeof state>();
 
     const state = {
@@ -377,7 +401,9 @@ describe('getUse', () => {
       state.x = 2;
     });
 
-    assert.strictEqual(renderedTimes, 2);
+    await new Promise((resolve) => { setTimeout(resolve, 20); });
+
+    assert.strictEqual(renderedTimes, 3);
     assert.deepStrictEqual(result.current satisfies [number, string], [2, '2']);
   });
 

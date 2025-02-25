@@ -6,7 +6,7 @@ import assert from 'node:assert';
 import { createRecord, extendedTimesSymbol } from '../src';
 
 describe('createRecord', () => {
-  it('use', () => {
+  it('use', async () => {
     const state = createRecord({
       x: 1,
       y: '2',
@@ -24,10 +24,11 @@ describe('createRecord', () => {
     assert.strictEqual(renderedTimes, 1);
 
     act(() => { state.x = 2; });
+    await new Promise((resolve) => { setTimeout(resolve, 20); });
 
     assert.strictEqual(result.current, 2);
     assert.strictEqual(state.x, 2);
-    assert.strictEqual(renderedTimes, 2);
+    assert.strictEqual(renderedTimes, 3);
   });
 
   it('useAll set property', async () => {

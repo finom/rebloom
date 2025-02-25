@@ -4,6 +4,43 @@ import {
 import listenOne from './listenOne';
 import { KnownAny } from './types';
 
+function throttle<T>(
+  fn: (...args: KnownAny[]) => T,
+  wait: number,
+  callback: (...args: KnownAny[]) => void,
+): (...args: KnownAny[]) => T {
+  let timer: ReturnType<typeof setTimeout> | null = null;
+  let lastResult: T;
+  let pendingUpdate = false;
+  let latestArgs: unknown[] | null = null;
+
+  return (...args: unknown[]): T => {
+    if (!timer) {
+      // First call in the cycle: execute immediately.
+      lastResult = fn(...args);
+      // Start the timer.
+      timer = setTimeout(() => {
+        // If any throttled calls occurred, update the result.
+        if (pendingUpdate && latestArgs !== null) {
+          const newResult = fn(...latestArgs);
+          lastResult = newResult;
+          callback(...latestArgs);
+        }
+        // Reset state for the next cycle.
+        timer = null;
+        pendingUpdate = false;
+        latestArgs = null;
+      }, wait);
+      return lastResult;
+    }
+    // While waiting: save the latest arguments and mark that an update is pending.
+    pendingUpdate = true;
+    latestArgs = args;
+    // Return the cached result.
+    return lastResult;
+  };
+}
+
 // type UseFKey<TState, TKey extends KeyExtends<TState>> = TKey extends null | undefined | keyof TState ? TKey : keyof TState;
 
 // that.use(['x', 'y'] as ['x', 'y'] | null, ([x, y], keyChanged, prev) => [x, y]);
@@ -73,6 +110,16 @@ export default function getUse<TState>() {
       prevValue: undefined,
     });
 
+    const throttledGetState = useMemo(
+      () => throttle((key: keyof TState | null, prevValue?: unknown) => getState(key, prevValue), 10, (key: keyof TState, prevValue) => {
+        setStateInfo({
+          key,
+          prevValue,
+        });
+      }),
+      [getState],
+    );
+
     useEffect(() => {
       const handler = (key: keyof TState | null, prevValue: unknown) => setStateInfo({
         key,
@@ -87,7 +134,7 @@ export default function getUse<TState>() {
       };
     }, [memoKeys]);
 
-    return useMemo(() => getState(stateInfo.key, stateInfo.prevValue), [getState, stateInfo]);
+    return useMemo(() => throttledGetState(stateInfo.key, stateInfo.prevValue), [throttledGetState, stateInfo]);
   }
 
   return use;
