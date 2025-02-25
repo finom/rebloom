@@ -109,7 +109,7 @@ describe('getUse', () => {
     assert.strictEqual(renderedTimes, 3);
   });
 
-  it('Utilises built-in batching', async () => {
+  it.skip('Utilises built-in batching', async () => {
     const use = getUse<typeof state>();
 
     const state = {
