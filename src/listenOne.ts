@@ -14,7 +14,7 @@ export default function listenOne<TState, TKey extends keyof TState>(
 
     Object.defineProperty(givenObject, key, {
       enumerable: existingDescriptor?.enumerable ?? true,
-      configurable: false,
+      configurable: true,
       get: () => value,
       set: (newValue: TState[TKey]) => {
         const prevValue = value;
