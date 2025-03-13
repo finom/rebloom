@@ -81,7 +81,7 @@ export default function getUse<TState>() {
 
       const unsubscribe = (memoKeys instanceof Array ? memoKeys : [memoKeys])
         .filter((key) => key !== null && key !== undefined)
-        .map((key) => listenOne(this, key, (_v, prevValue) => handler(key, prevValue)));
+        .map((key) => listenOne(this, key!, (_v, prevValue) => handler(key!, prevValue)));
       return () => {
         unsubscribe.forEach((u) => u());
       };
