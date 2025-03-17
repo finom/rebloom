@@ -76,7 +76,7 @@ export default function createRecord<T extends object>(init?: T) {
     },
   };
 
-  let immediate: NodeJS.Timeout | null = null;
+  let timeout: NodeJS.Timeout | null = null;
 
   target.use = target.use.bind(target) as ReturnType<typeof getUse<T & Symbols>>;
   target.useAll = target.useAll.bind(target);
@@ -101,13 +101,13 @@ export default function createRecord<T extends object>(init?: T) {
         target[prop as keyof T] = value;
         keysChanged.push(prop as keyof T); // TODO: Turn into Set
 
-        if (!immediate) {
-          immediate = setTimeout(() => {
-            immediate = null;
+        if (!timeout) {
+          timeout = setTimeout(() => {
+            timeout = null;
             target[extendedTimesSymbol] += 1;
             keysChanged = [];
             prev = { ...target };
-          }, 0);
+          }, 10);
         }
       }
 
@@ -121,13 +121,13 @@ export default function createRecord<T extends object>(init?: T) {
         delete target[prop as keyof T];
         keysChanged.push(prop as keyof T);
 
-        if (!immediate) {
-          immediate = setTimeout(() => {
-            immediate = null;
+        if (!timeout) {
+          timeout = setTimeout(() => {
+            timeout = null;
             target[extendedTimesSymbol] += 1;
             keysChanged = [];
             prev = { ...target };
-          }, 0);
+          }, 10);
         }
       }
 
